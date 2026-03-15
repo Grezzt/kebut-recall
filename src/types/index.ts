@@ -11,6 +11,7 @@ export interface QuizQuestion {
   correct_answer: string; // Harus sama persis dengan salah satu isi array options
   explanation: string;
   source_topic: string;
+  page_number?: number;
 }
 
 export interface MindmapNode {
