@@ -153,11 +153,7 @@ body {
 
 /* Hover card wrapper */
 .ks-hover-card-wrapper {
-  border: 1.5px solid var(--dark);
   position: relative;
-}
-.ks-hover-card-wrapper:last-child {
-  border-right: 1.5px solid var(--dark);
 }
 .ks-hover-card {
   padding: 24px 20px;
@@ -174,7 +170,7 @@ body {
 }
 .ks-hover-card:hover {
   background-color: var(--dark);
-  transform: translate(-12px, -12px);
+  transform: translate(-8px, -8px);
   color: var(--white);
 }
 .ks-hover-card:hover .ks-hover-card-text { color: var(--white) !important; opacity: 0.8 !important; }
@@ -189,24 +185,15 @@ body {
   background-color: var(--yellow);
   opacity: 0; visibility: hidden;
   transition: opacity 0.3s ease;
+  border: 2px solid var(--dark);
 }
 .ks-hover-card-shadow::before {
-  content: "";
-  position: absolute;
-  width: 0; height: 0;
-  border-style: solid; border-width: 12px;
-  top: -12px; right: -12px;
-  border-color: transparent transparent transparent var(--yellow);
+  display: none;
 }
 .ks-hover-card-shadow::after {
-  content: "";
-  position: absolute;
-  width: 0; height: 0;
-  border-style: solid; border-width: 12px;
-  bottom: 0; left: -24px;
-  border-color: transparent var(--yellow) transparent transparent;
+  display: none;
 }
-.ks-hover-card-wrapper:hover .ks-hover-card-shadow { opacity: 1; visibility: visible; }
+.ks-hover-card-wrapper:hover .ks-hover-card-shadow { opacity: 1; visibility: visible; transform: translate(4px, 4px); box-shadow: 4px 4px 0px 0px var(--dark); }
 .ks-hover-card-heading { color: var(--dark); }
 
 /* Interactive hero grid cells */

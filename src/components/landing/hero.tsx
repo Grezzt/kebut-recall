@@ -40,7 +40,7 @@ export default function Hero() {
         {/* Text Content */}
         <div className="w-full lg:w-1/2 flex flex-col justify-center text-left py-10 lg:my-auto">
           <h1 className="hero-text text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-white leading-[1.1] mb-6 tracking-tight z-10 relative">
-            Belajar Jadi Menyenangkan <br />
+            Belajar Jadi Efektif <br />
             <span className="text-yellow italic font-handwriting mt-4 mb-2 inline-block -rotate-[3deg]">
               Kebut Recall
             </span>

@@ -3,9 +3,9 @@
 import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY || process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.NEXT_PUBLIC_CLOUDINARY_API_SECRET || process.env.CLOUDINARY_API_SECRET,
   secure: true,
 });
 
@@ -19,16 +19,14 @@ export async function getCloudinarySignature() {
     folder: "materi_pdf",
   };
 
-  const signature = cloudinary.utils.api_sign_request(
-    paramsToSign,
-    process.env.CLOUDINARY_API_SECRET!
-  );
+  const apiSecret = process.env.NEXT_PUBLIC_CLOUDINARY_API_SECRET || process.env.CLOUDINARY_API_SECRET || "";
+  const signature = cloudinary.utils.api_sign_request(paramsToSign, apiSecret);
 
   return {
     timestamp,
     signature,
-    cloudName: process.env.CLOUDINARY_CLOUD_NAME!,
-    apiKey: process.env.CLOUDINARY_API_KEY!,
+    cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_CLOUD_NAME || "",
+    apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY || process.env.CLOUDINARY_API_KEY || "",
     folder: "materi_pdf",
   };
 }
