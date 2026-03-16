@@ -15,18 +15,24 @@ const features = [
     title: "AI Quiz Generator",
     desc: "Uji pemahamanmu seketika. AI kami akan membuatkan soal-soal relevan dari materi yang kamu unggah.",
     href: "/create",
+    color: "#ffffff", // white
+    rotation: -2,
   },
   {
     icon: BookType,
     title: "Flashcard Pintar",
     desc: "Hafalkan istilah dan konsep penting dengan mudah menggunakan sistem flashcard otomatis yang interaktif.",
     href: "/create",
+    color: "#ffd900", // yellow
+    rotation: 2,
   },
   {
     icon: Network,
     title: "Mind-Map Visual",
     desc: "Pahami gambaran besar materi. Kami mengubah teks monoton menjadi kerangka visual (mind map) yang rapi.",
     href: "/create",
+    color: "#c5d8f1", // light blue
+    rotation: -1,
   },
 ];
 
@@ -35,7 +41,7 @@ export default function Features() {
 
   useGSAP(
     () => {
-      gsap.from(".feat-card", {
+      gsap.from(".feat-hero-text", {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top 75%",
@@ -54,87 +60,108 @@ export default function Features() {
     <section
       id="fitur"
       ref={sectionRef}
-      className="ks-has-texture relative border-t"
+      className="relative border-t"
       style={{
+        backgroundColor: "var(--light-blue)",
         borderColor: "rgba(24,30,42,0.1)",
         paddingTop: "120px",
         paddingBottom: "120px",
       }}
     >
       <div className="mx-auto px-5 lg:px-14" style={{ maxWidth: 1400 }}>
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
-          <div className="max-w-xl">
-            <span className="ks-callout-text block mb-4">Fitur Andalan</span>
-            <h2
-              className="font-bold leading-tight"
-              style={{
-                fontSize: "clamp(32px, 4vw, 56px)",
-                letterSpacing: "-0.02em",
-                color: "var(--dark)",
-              }}
-            >
-              Semua yang kamu butuhkan untuk <span style={{ color: "var(--purple)" }}>Kebut</span> yang efektif.
-            </h2>
-          </div>
-          <div>
-            <Link href="/create" className="btn-ks-accent">
-              Mulai Eksplorasi
-            </Link>
-          </div>
-        </div>
+        <div className="flex flex-col lg:flex-row gap-16 lg:gap-20">
 
-        {/* Cards */}
-        <div
-          className="feat-cards grid grid-cols-1 md:grid-cols-3"
-          style={{ border: "1.5px solid var(--dark)", borderRight: "none" }}
-        >
-          {features.map((item, i) => (
-            <div key={i} className="ks-hover-card-wrapper feat-card">
-              <div className="ks-hover-card-shadow" />
-              <div className="ks-hover-card">
-                <div>
-                  <div
-                    className="ks-hover-card-icon inline-flex items-center justify-center mb-10 transition-colors"
-                    style={{
-                      width: 56,
-                      height: 56,
-                      backgroundColor: "rgba(24,30,42,0.05)",
-                      color: "var(--dark)",
-                      borderRadius: "0",
-                    }}
-                  >
-                    <item.icon size={28} strokeWidth={1.5} />
-                  </div>
-                  <h3
-                    className="ks-hover-card-heading text-2xl font-bold mb-4 transition-colors"
-                    style={{ letterSpacing: "-0.01em" }}
-                  >
-                    {item.title}
-                  </h3>
-                  <p
-                    className="ks-hover-card-text text-base leading-relaxed transition-colors"
-                    style={{ color: "rgba(24,30,42,0.7)" }}
-                  >
-                    {item.desc}
-                  </p>
-                </div>
-
-                <div className="pt-10">
-                  <Link
-                    href={item.href}
-                    className="ks-hover-card-btn inline-flex items-center text-sm font-bold uppercase tracking-wider pb-1 transition-all"
-                    style={{
-                      borderBottom: "2px solid var(--dark)",
-                      color: "var(--dark)",
-                    }}
-                  >
-                    Coba Fitur
-                  </Link>
-                </div>
+          {/* Left Content (Sticky) */}
+          <div className="lg:w-1/2">
+            <div className="lg:sticky lg:top-[15vh]">
+              <span className="ks-callout-text block mb-4 feat-hero-text">Fitur Andalan</span>
+              <h2
+                className="font-bold leading-tight mb-8 feat-hero-text"
+                style={{
+                  fontSize: "clamp(48px, 5vw, 72px)",
+                  letterSpacing: "-0.03em",
+                  color: "var(--dark)",
+                }}
+              >
+                Semua yang kamu butuhkan untuk <span style={{ color: "var(--purple)" }}>Kebut</span> yang efektif.
+              </h2>
+              <p
+                className="text-lg md:text-xl font-bold mb-10 max-w-lg feat-hero-text"
+                style={{ color: "var(--dark)", opacity: 0.8, lineHeight: 1.6 }}
+              >
+                Fitur kami bukan cuma sekadar pemanis. Semuanya dirancang khusus agar kamu bisa langsung paham materi tanpa harus membuang banyak waktu.
+              </p>
+              <div className="feat-hero-text">
+                <Link href="/create" className="btn-ks-accent text-lg px-8 py-4 border-2 border-[var(--dark)] shadow-[4px_4px_0px_0px_var(--dark)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_var(--dark)]">
+                  Mulai Eksplorasi
+                </Link>
               </div>
             </div>
-          ))}
+          </div>
+
+          {/* Right Content (Stacking Cards) */}
+          <div className="lg:w-1/2 relative mt-16 lg:mt-0 flex flex-col pt-10 pb-[10vh]">
+            {features.map((item, i) => {
+              // Calculate top offset for stacking effect
+              const topOffset = 15 + i * 4;
+
+              return (
+                <div
+                  key={i}
+                  className="sticky w-full border-4 border-[#181e2a] rounded-[2rem] p-8 md:p-12 shadow-[8px_8px_0px_0px_#181e2a] flex flex-col transition-transform duration-300 transform-gpu"
+                  style={{
+                    top: `${topOffset}vh`, // Sticky positioning makes them stack
+                    backgroundColor: item.color,
+                    minHeight: "420px",
+                    marginBottom: i === features.length - 1 ? "40vh" : "60vh",
+                    rotate: `${item.rotation}deg`
+                  }}
+                >
+                   <div
+                      className="inline-flex items-center justify-center mb-8 border-[3px] border-[var(--dark)] rounded-2xl"
+                      style={{
+                        width: 80,
+                        height: 80,
+                        backgroundColor: "var(--white)",
+                        color: "var(--dark)",
+                        boxShadow: "4px 4px 0px 0px var(--dark)"
+                      }}
+                    >
+                      <item.icon size={40} strokeWidth={2} />
+                    </div>
+
+                    <div>
+                      <h3
+                        className="text-3xl md:text-4xl font-black mb-6"
+                        style={{ color: "var(--dark)", letterSpacing: "-0.03em" }}
+                      >
+                        {item.title}
+                      </h3>
+                      <p
+                        className="text-lg md:text-xl font-bold leading-relaxed mb-10"
+                        style={{ color: "var(--dark)", opacity: 0.85 }}
+                      >
+                        {item.desc}
+                      </p>
+                    </div>
+
+                    <div className="mt-auto">
+                      <Link
+                        href={item.href}
+                        className="inline-flex items-center text-sm md:text-base font-black uppercase tracking-wider pb-1 hover:opacity-60 transition-all"
+                        style={{
+                          borderBottom: "3px solid var(--dark)",
+                          color: "var(--dark)",
+                        }}
+                      >
+                        Coba Fitur Ini
+                      </Link>
+                    </div>
+                </div>
+              );
+            })}
+          </div>
+
         </div>
       </div>
     </section>

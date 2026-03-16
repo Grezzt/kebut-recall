@@ -18,15 +18,15 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-8 mb-16">
           <div className="md:col-span-5">
             <Link href="/" className="inline-flex items-center gap-2 mb-6">
-              <span className="text-2xl font-bold tracking-tight text-white">Smart</span>
+              <span className="text-2xl font-bold tracking-tight text-white">Kebut</span>
               <span
                 className="flex items-center justify-center px-1.5 py-0.5 text-xs font-black tracking-widest uppercase"
                 style={{
-                  backgroundColor: "var(--yellow)",
+                  backgroundColor: "var(--purple)",
                   color: "var(--dark)",
                 }}
               >
-                SKS
+                Recall
               </span>
             </Link>
             <p
@@ -95,7 +95,7 @@ export default function Footer() {
             className="text-[13px] mb-4 md:mb-0"
             style={{ color: "rgba(255,255,255,0.5)" }}
           >
-            © {currentYear} Kebut Recall. Kebut Semalam Lebih Cerdas.
+            © {currentYear} Kebut Recall.
           </p>
         </div>
       </div>

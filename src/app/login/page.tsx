@@ -1,9 +1,16 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import { headers } from 'next/headers'
+import Link from 'next/link'
 
-export default async function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ mode?: string; error?: string; message?: string }>
+}) {
   const supabase = await createClient()
+  const { mode, error, message } = await searchParams
+  const isRegister = mode === 'register'
 
   // Return to dashboard if already logged in
   const { data: { session } } = await supabase.auth.getSession()
@@ -35,18 +42,83 @@ export default async function LoginPage() {
     }
   }
 
+  const signInWithPassword = async (formData: FormData) => {
+    "use server"
+
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
+    const supabase = await createClient()
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    if (error) {
+      return redirect('/login?error=Email atau password salah')
+    }
+
+    return redirect('/dashboard')
+  }
+
+  const signUp = async (formData: FormData) => {
+    "use server"
+
+    const origin = (await headers()).get('origin')
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
+    const supabase = await createClient()
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${origin}/auth/callback`,
+      },
+    })
+
+    if (error) {
+      return redirect('/login?mode=register&error=Gagal mendaftar')
+    }
+
+    return redirect('/login?message=Cek email kamu untuk melanjutkan proses pendaftaran')
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-8 shadow-sm text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">🎓 Kebut Recall</h1>
-        <p className="text-sm text-gray-500 mb-8">
-          Masuk untuk menyimpan riwayat modul belajar hasil AI-mu.
+    <div className="flex min-h-screen items-center justify-center bg-dark p-4 font-sans">
+      {/* Background decoration to match landing page */}
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <div className="w-[800px] h-[800px] bg-purple/10 blur-[120px] rounded-full" />
+      </div>
+
+      <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/10 bg-dark/60 p-8 shadow-2xl backdrop-blur-xl text-center">
+        <Link href="/" className="inline-block relative">
+          <h1 className="text-2xl font-extrabold text-white mb-2 pb-1">
+            Kebut
+            <span className="text-yellow"> Recall</span>
+          </h1>
+        </Link>
+        <p className="text-sm text-gray mb-8">
+          {isRegister
+            ? "Mulai perjalanan sukses ujian dengan AI."
+            : "Masuk untuk melanjutkan sesi belajarmu."}
         </p>
 
-        <form action={signInWithGoogle}>
+        {error && (
+          <div className="mb-4 rounded-lg bg-red-500/10 p-3 text-sm text-red-500 border border-red-500/20">
+            {error}
+          </div>
+        )}
+        {message && (
+          <div className="mb-4 rounded-lg bg-green/10 p-3 text-sm text-green border border-green/20">
+            {message}
+          </div>
+        )}
+
+        <form action={signInWithGoogle} className="mb-6">
           <button
             type="submit"
-            className="flex w-full items-center justify-center gap-3 rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+            className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/10"
           >
             <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
               <path
@@ -70,7 +142,71 @@ export default async function LoginPage() {
           </button>
         </form>
 
-        <div className="mt-8 text-xs text-gray-400">
+        <div className="relative mb-6 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-white/10"></div>
+          </div>
+          <div className="relative z-10 bg-dark px-3 text-xs text-gray uppercase tracking-wider bg-opacity-100 mix-blend-normal relative before:absolute before:inset-0 before:bg-dark before:-z-10">
+            atau dengan email
+          </div>
+        </div>
+
+        <form action={isRegister ? signUp : signInWithPassword} className="flex flex-col gap-4 text-left">
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray" htmlFor="email">
+              Alamat Email
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="kebut@semalam.com"
+              required
+              className="w-full rounded-xl border border-white/10 bg-dark-90 px-4 py-3 text-white placeholder-white/30 focus:border-purple focus:outline-none focus:ring-1 focus:ring-purple"
+            />
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray" htmlFor="password">
+              Password
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              placeholder="••••••••"
+              required
+              className="w-full rounded-xl border border-white/10 bg-dark-90 px-4 py-3 text-white placeholder-white/30 focus:border-purple focus:outline-none focus:ring-1 focus:ring-purple"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="mt-2 flex w-full justify-center rounded-xl bg-purple px-4 py-3 text-sm font-bold text-white transition hover:bg-purple/90"
+          >
+            {isRegister ? "Buat Akun" : "Masuk"}
+          </button>
+        </form>
+
+        <div className="mt-6 text-sm text-gray">
+          {isRegister ? (
+            <>
+              Sudah punya akun?{" "}
+              <Link href="/login" className="text-white font-medium hover:underline">
+                Masuk di sini
+              </Link>
+            </>
+          ) : (
+            <>
+              Belum punya akun?{" "}
+              <Link href="/login?mode=register" className="text-white font-medium hover:underline">
+                Daftar sekarang
+              </Link>
+            </>
+          )}
+        </div>
+
+        <div className="mt-8 text-xs text-white/30">
           Aman dan terenkripsi menggunakan Supabase Auth
         </div>
       </div>

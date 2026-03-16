@@ -32,8 +32,9 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   // Protect private routes
-  const isPrivateRoute = request.nextUrl.pathname.startsWith('/dashboard') || 
-                         request.nextUrl.pathname.startsWith('/study')
+  const isPrivateRoute = request.nextUrl.pathname.startsWith('/dashboard') ||
+                         request.nextUrl.pathname.startsWith('/study') ||
+                         request.nextUrl.pathname.startsWith('/create')
 
   if (isPrivateRoute && !user) {
     const url = request.nextUrl.clone()

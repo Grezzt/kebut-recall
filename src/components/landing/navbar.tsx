@@ -97,20 +97,20 @@ export default function Navbar() {
                 Kebut<span className="text-purple ml-[2px]">Recall</span>
               </span>
               <span className="text-[13px] font-medium text-gray-900 hidden md:block tracking-wide">
-                ai learning platform
+                Siap Ujian Besok!
               </span>
             </Link>
           </div>
 
           {/* Middle Nav Links */}
-          <div className="hidden md:flex items-center gap-6 lg:gap-8 mr-2">
+          {/* <div className="hidden md:flex items-center gap-6 lg:gap-8 mr-2">
             <Link href="#fitur" className="text-[11px] font-bold text-gray-900 hover:text-gray-500 transition-colors uppercase tracking-[0.08em]">
               Fitur
             </Link>
             <Link href="#cara-kerja" className="text-[11px] font-bold text-gray-900 hover:text-gray-500 transition-colors uppercase tracking-[0.08em]">
               Cara Kerja
             </Link>
-          </div>
+          </div> */}
 
           {/* Right Box (Button) */}
           <div>
@@ -164,7 +164,7 @@ export default function Navbar() {
             {/* Dekorasi Bubble Chat - ala gambar referensi Fooror */}
             <div className="absolute top-0 right-0 md:-right-10 bg-white border-[3px] border-gray-900 rounded-[50%] p-6 shadow-sm hidden md:block">
               <p className="font-bold text-xl md:text-2xl text-center max-w-[150px] text-gray-900">
-                Siapp Kebut Belajar?
+                Siapp Belajar?
               </p>
             </div>
           </div>

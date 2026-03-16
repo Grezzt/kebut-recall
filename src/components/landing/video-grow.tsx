@@ -14,7 +14,7 @@ export default function VideoGrow() {
   const imgRef = useRef<HTMLImageElement>(null);
 
   // Kata yang akan dianimasikan
-  const text = "INTERAKTIF";
+  const text = "Belajar Seru";
   const chars = text.split("");
 
   useGSAP(
@@ -117,8 +117,8 @@ export default function VideoGrow() {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full bg-[#20243b]"
-      style={{ height: "400svh" }}
+      className="relative w-full"
+      style={{ height: "400svh", backgroundColor: "var(--dark)" }}
     >
       <div className="sticky top-0 w-full h-[100svh] flex justify-center items-center overflow-hidden">
         {/* Layer 1: Title (Behind Video) */}
