@@ -6,11 +6,12 @@ import Link from 'next/link'
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ mode?: string; error?: string; message?: string }>
+  searchParams: Promise<{ mode?: string; error?: string; message?: string; email?: string }>
 }) {
   const supabase = await createClient()
-  const { mode, error, message } = await searchParams
+  const { mode, error, message, email: emailParam } = await searchParams
   const isRegister = mode === 'register'
+  const isVerify = mode === 'verify'
 
   // Return to dashboard if already logged in
   const { data: { session } } = await supabase.auth.getSession()
@@ -81,7 +82,26 @@ export default async function LoginPage({
       return redirect('/login?mode=register&error=Gagal mendaftar')
     }
 
-    return redirect('/login?message=Cek email kamu untuk melanjutkan proses pendaftaran')
+    return redirect(`/login?mode=verify&email=${encodeURIComponent(email)}&message=Cek email kamu untuk kode OTP (8 digit) atau link verifikasi`)
+  }
+
+  const verifyOtp = async (formData: FormData) => {
+    "use server"
+    const email = formData.get('email') as string
+    const token = formData.get('token') as string
+    const supabase = await createClient()
+
+    const { error } = await supabase.auth.verifyOtp({
+      email,
+      token,
+      type: 'signup',
+    })
+
+    if (error) {
+      return redirect(`/login?mode=verify&email=${encodeURIComponent(email)}&error=Kode OTP salah atau kadaluarsa`)
+    }
+
+    return redirect('/dashboard')
   }
 
   return (
@@ -99,7 +119,9 @@ export default async function LoginPage({
           </h1>
         </Link>
         <p className="text-sm text-gray mb-8">
-          {isRegister
+          {isVerify
+            ? "Masukkan kode OTP yang dikirim ke email Anda."
+            : isRegister
             ? "Mulai perjalanan sukses ujian dengan AI."
             : "Masuk untuk melanjutkan sesi belajarmu."}
         </p>
@@ -115,7 +137,36 @@ export default async function LoginPage({
           </div>
         )}
 
-        <form action={signInWithGoogle} className="mb-6">
+        {isVerify ? (
+          <form action={verifyOtp} className="flex flex-col gap-4 text-left">
+            <input type="hidden" name="email" value={emailParam || ''} />
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray" htmlFor="token">
+                Kode OTP (8 Digit)
+              </label>
+              <input
+                id="token"
+                name="token"
+                type="text"
+                maxLength={8}
+                placeholder="12345678"
+                required
+                className="w-full tracking-widest text-center text-2xl rounded-xl border border-white/10 bg-dark-90 px-4 py-3 text-white placeholder-white/30 focus:border-purple focus:outline-none focus:ring-1 focus:ring-purple"
+              />
+            </div>
+            <button
+              type="submit"
+              className="mt-2 flex w-full justify-center rounded-xl bg-purple px-4 py-3 text-sm font-bold text-white transition hover:bg-purple/90"
+            >
+              Verifikasi OTP
+            </button>
+            <div className="mt-4 text-center text-sm text-gray">
+              Kembali ke <Link href="/login" className="text-white hover:underline">Halaman Login</Link>
+            </div>
+          </form>
+        ) : (
+          <>
+            <form action={signInWithGoogle} className="mb-6">
           <button
             type="submit"
             className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/10"
@@ -168,12 +219,13 @@ export default async function LoginPage({
 
           <div>
             <label className="mb-1 block text-sm font-medium text-gray" htmlFor="password">
-              Password
+              Password {isRegister && "(Min. 6 Karakter)"}
             </label>
             <input
               id="password"
               name="password"
               type="password"
+              minLength={isRegister ? 6 : undefined}
               placeholder="••••••••"
               required
               className="w-full rounded-xl border border-white/10 bg-dark-90 px-4 py-3 text-white placeholder-white/30 focus:border-purple focus:outline-none focus:ring-1 focus:ring-purple"
@@ -205,6 +257,8 @@ export default async function LoginPage({
             </>
           )}
         </div>
+        </>
+        )}
 
         <div className="mt-8 text-xs text-white/30">
           Aman dan terenkripsi menggunakan Supabase Auth
