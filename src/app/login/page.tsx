@@ -4,20 +4,20 @@ import { headers } from 'next/headers'
 
 export default async function LoginPage() {
   const supabase = await createClient()
-  
+
   // Return to dashboard if already logged in
   const { data: { session } } = await supabase.auth.getSession()
-  
+
   if (session) {
     redirect('/dashboard')
   }
 
   const signInWithGoogle = async () => {
     "use server"
-    
+
     const supabase = await createClient()
     const origin = (await headers()).get('origin')
-    
+
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -38,7 +38,7 @@ export default async function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
       <div className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-8 shadow-sm text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">🎓 Smart-SKS</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">🎓 Kebut Recall</h1>
         <p className="text-sm text-gray-500 mb-8">
           Masuk untuk menyimpan riwayat modul belajar hasil AI-mu.
         </p>
@@ -69,7 +69,7 @@ export default async function LoginPage() {
             Lanjutkan dengan Google
           </button>
         </form>
-        
+
         <div className="mt-8 text-xs text-gray-400">
           Aman dan terenkripsi menggunakan Supabase Auth
         </div>

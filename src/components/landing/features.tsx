@@ -74,7 +74,7 @@ export default function Features() {
                 color: "var(--dark)",
               }}
             >
-              Semua yang kamu butuhkan untuk <span style={{ color: "var(--purple)" }}>SKS</span> yang efektif.
+              Semua yang kamu butuhkan untuk <span style={{ color: "var(--purple)" }}>Kebut</span> yang efektif.
             </h2>
           </div>
           <div>

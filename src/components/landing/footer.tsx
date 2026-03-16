@@ -95,7 +95,7 @@ export default function Footer() {
             className="text-[13px] mb-4 md:mb-0"
             style={{ color: "rgba(255,255,255,0.5)" }}
           >
-            © {currentYear} Smart-SKS. Kebut Semalam Lebih Cerdas.
+            © {currentYear} Kebut Recall. Kebut Semalam Lebih Cerdas.
           </p>
         </div>
       </div>

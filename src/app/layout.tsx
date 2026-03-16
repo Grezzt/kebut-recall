@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Smart-SKS — Sistem Kebut Semalam",
+  title: "Kebut Recall - Sistem Kebut Semalam",
   description: "Platform belajar interaktif berbasis AI: Flashcard, Quiz, dan Mind-Map dari dokumen kuliahmu.",
 };
 

@@ -21,7 +21,8 @@ const config: Config = {
         "dark-90": "var(--dark-90)",
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "sans-serif"],
+        sans: ["Manrope", "sans-serif"],
+        handwriting: ["Caveat", "cursive"],
       },
     },
   },
