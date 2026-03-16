@@ -15,7 +15,7 @@ export default async function DashboardPage() {
 
   const { data: documents, error } = await supabase
     .from("study_documents")
-    .select("id, title, status, flashcards, quiz, mindmap, created_at")
+    .select("id, title, status, flashcards, quiz, mindmap, created_at, file_url")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
@@ -78,7 +78,7 @@ export default async function DashboardPage() {
                     {new Date(doc.created_at).toLocaleString("id-ID")}
                   </p>
                 </div>
-                
+
                 <div className="flex items-center gap-3">
                   <span
                     className={`rounded-full px-2.5 py-0.5 text-xs font-medium shrink-0 ${
@@ -91,7 +91,22 @@ export default async function DashboardPage() {
                   >
                     {doc.status}
                   </span>
-                  
+
+                  {doc.file_url && (
+                    <a
+                      href={doc.file_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors shrink-0 flex items-center"
+                      title="Lihat PDF"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                      </svg>
+                    </a>
+                  )}
+
                   {doc.status === "completed" && (
                      <Link
                       href={`/study/${doc.id}`}

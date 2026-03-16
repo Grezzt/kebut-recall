@@ -4,11 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
+import { getCloudinarySignature } from "@/app/actions/cloudinary";
 
 async function extractTextFromPDF(file: File) {
   // @ts-expect-error type definitions untuk pdfjs-dist tidak lengkap di versi ini
   const pdfjsLib = await import("pdfjs-dist/build/pdf");
-  
+
   // Memuat standar worker langsung dari node_modules menggunakan Webpack public path
   if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
     pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
@@ -55,13 +56,39 @@ export default function CreatePage() {
       // 1. Ekstrak teks dari PDF di browser pengguna, mencegah payload 10MB limit NextJS
       const content = await extractTextFromPDF(file);
 
-      // 2. Transmit HANYA string teks mentah ke backend (sangat kecil sizenya)
+      // 2. Dapatkan signature dari server untuk upload ke Cloudinary secara aman
+      const { timestamp, signature, cloudName, apiKey, folder } = await getCloudinarySignature();
+
+      // 3. Upload file ke Cloudinary
+      const uploadFormData = new FormData();
+      uploadFormData.append("file", file);
+      uploadFormData.append("api_key", apiKey);
+      uploadFormData.append("timestamp", timestamp.toString());
+      uploadFormData.append("signature", signature);
+      uploadFormData.append("folder", folder);
+
+      const uploadRes = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`,
+        {
+          method: "POST",
+          body: uploadFormData,
+        }
+      );
+
+      if (!uploadRes.ok) {
+        throw new Error("Gagal mengupload file materi ke Cloudinary.");
+      }
+
+      const uploadData = await uploadRes.json();
+      const file_url = uploadData.secure_url;
+
+      // 4. Transmit string teks mentah dan URL file PDF ke backend
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ title, content }),
+        body: JSON.stringify({ title, content, file_url }),
       });
 
       const data = await res.json();

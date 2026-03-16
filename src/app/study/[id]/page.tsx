@@ -28,7 +28,7 @@ interface Props {
 export default function StudyPage({ params }: Props) {
   const { id } = use(params);
   const [tab, setTab] = useState<Tab>("flashcard");
-  
+
   const [doc, setDoc] = useState<StudyDocument | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -49,7 +49,7 @@ export default function StudyPage({ params }: Props) {
         .eq("id", id)
         .eq("user_id", user.id)
         .single();
-        
+
       if (error) {
         console.error("Failed to load document:", error);
       }
@@ -84,7 +84,24 @@ export default function StudyPage({ params }: Props) {
             <Link href="/dashboard" className="text-sm text-gray-400 hover:text-gray-600">
               ← Kembali ke Dashboard
             </Link>
-            <h1 className="mt-2 text-xl font-bold text-gray-900">{doc.title}</h1>
+            <div className="mt-2 flex flex-col sm:flex-row sm:items-center gap-3">
+              <h1 className="text-xl font-bold text-gray-900">{doc.title}</h1>
+              {doc.file_url && (
+                <a
+                  href={doc.file_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-600 hover:bg-blue-100 transition-colors flex items-center gap-1 w-fit"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinelinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="9" y1="15" x2="15" y2="15"></line>
+                  </svg>
+                  Lihat PDF
+                </a>
+              )}
+            </div>
           </div>
           <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
             Dihasilkan oleh AI
@@ -119,7 +136,7 @@ export default function StudyPage({ params }: Props) {
           {tab === "mindmap" && doc.mindmap && doc.mindmap.length > 0 && (
             <Mindmap nodes={doc.mindmap} />
           )}
-          
+
           {/* Empty State */}
           {((tab === "flashcard" && (!doc.flashcards || doc.flashcards.length === 0)) ||
            (tab === "quiz" && (!doc.quiz || doc.quiz.length === 0)) ||

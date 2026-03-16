@@ -48,7 +48,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized. Please login first." }, { status: 401 });
     }
 
-    const { title, content } = await req.json();
+    const { title, content, file_url } = await req.json();
 
     if (!title || !content) {
       return NextResponse.json({ error: "Title and content are required" }, { status: 400 });
@@ -97,6 +97,7 @@ export async function POST(req: Request) {
       .insert({
         user_id: user.id, // Insert authentic user id mapped from Auth session
         title: title,
+        file_url: file_url || null, // <-- Menyimpan referensi file cloudinary
         flashcards: aiResult.flashcards,
         quiz: aiResult.quiz,
         mindmap: cleanedMindmap,
