@@ -1,8 +1,18 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap");
 @import "tailwindcss";
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #181e2a; /* dark */
+
+  --dark: #181e2a;
+  --light-blue: #c5d8f1;
+  --white: #ffffff;
+  --gray: #d7dfe9;
+  --yellow: #ffd900;
+  --purple: #4e39c5;
+  --green: #1db445;
+  --dark-90: #202230;
 }
 
 @theme inline {
@@ -10,17 +20,242 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --color-dark: var(--dark);
+  --color-light-blue: var(--light-blue);
+  --color-white: var(--white);
+  --color-gray: var(--gray);
+  --color-yellow: var(--yellow);
+  --color-purple: var(--purple);
+  --color-green: var(--green);
+  --color-dark-90: var(--dark-90);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #181e2a; /* dark */
+    --foreground: #ffffff;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow-x: hidden;
+}
+
+/* =====================================================================
+   LANDING PAGE UTILITIES — Kebut Semalam
+   Adapted from ExpenseLens (Visify pattern)
+   ===================================================================== */
+
+/* Grid background (hero overlay) */
+.ks-grid-bg {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect width='120' height='120' fill='none' stroke='rgba(255,217,0,0.1)' stroke-width='1'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 60px 60px;
+}
+
+.ks-has-texture {
+  background-color: var(--light-blue);
+  color: var(--dark);
+}
+
+/* White CTA button */
+.btn-ks-white {
+  position: relative;
+  display: inline-block;
+  color: var(--dark);
+  text-decoration: none;
+  background-color: var(--white);
+  font-weight: 700;
+  padding: 13px 30px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  letter-spacing: 0.5px;
+}
+.btn-ks-white:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 0 0 var(--yellow);
+  color: var(--dark);
+}
+
+/* Outline button with corner brackets */
+.btn-ks-outline {
+  position: relative;
+  display: inline-block;
+  color: var(--white);
+  text-decoration: none;
+  background-color: transparent;
+  font-weight: 600;
+  padding: 13px 30px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.5px;
+}
+.btn-ks-outline::before,
+.btn-ks-outline::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 1px solid rgba(255, 217, 0, 0.7);
+}
+.btn-ks-outline::before { top: 0; left: 0; border-right: none; border-bottom: none; }
+.btn-ks-outline::after { bottom: 0; right: 0; border-left: none; border-top: none; }
+.btn-ks-outline:hover {
+  background-color: var(--white);
+  color: var(--dark);
+  transform: translateY(-6px);
+  box-shadow: 0 8px 0 0 var(--yellow);
+}
+
+/* Accent button */
+.btn-ks-accent {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--yellow);
+  color: var(--dark);
+  font-weight: 800;
+  font-size: 13px;
+  padding: 10px 22px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+.btn-ks-accent:hover { background-color: #ffe64d; }
+
+/* Primary button */
+.btn-ks-primary {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--purple);
+  color: var(--white);
+  font-weight: 800;
+  font-size: 13px;
+  padding: 10px 22px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+.btn-ks-primary:hover { background-color: #5c47d6; }
+
+/* Hover card wrapper */
+.ks-hover-card-wrapper {
+  border: 1.5px solid var(--dark);
+  position: relative;
+}
+.ks-hover-card-wrapper:last-child {
+  border-right: 1.5px solid var(--dark);
+}
+.ks-hover-card {
+  padding: 24px 20px;
+  background-color: transparent;
+  transform: translate(0, 0);
+  transition: all 0.2s ease;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  min-height: 240px;
+}
+.ks-hover-card:hover {
+  background-color: var(--dark);
+  transform: translate(-12px, -12px);
+  color: var(--white);
+}
+.ks-hover-card:hover .ks-hover-card-text { color: var(--white) !important; opacity: 0.8 !important; }
+.ks-hover-card:hover .ks-hover-card-heading { color: var(--white); }
+.ks-hover-card:hover .ks-hover-card-btn { color: var(--white); border-color: var(--yellow); }
+.ks-hover-card:hover .ks-hover-card-icon { color: var(--yellow); }
+.ks-hover-card-shadow {
+  position: absolute;
+  width: 100%; height: 100%;
+  top: 0; left: 0;
+  z-index: 0;
+  background-color: var(--yellow);
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.3s ease;
+}
+.ks-hover-card-shadow::before {
+  content: "";
+  position: absolute;
+  width: 0; height: 0;
+  border-style: solid; border-width: 12px;
+  top: -12px; right: -12px;
+  border-color: transparent transparent transparent var(--yellow);
+}
+.ks-hover-card-shadow::after {
+  content: "";
+  position: absolute;
+  width: 0; height: 0;
+  border-style: solid; border-width: 12px;
+  bottom: 0; left: -24px;
+  border-color: transparent var(--yellow) transparent transparent;
+}
+.ks-hover-card-wrapper:hover .ks-hover-card-shadow { opacity: 1; visibility: visible; }
+.ks-hover-card-heading { color: var(--dark); }
+
+/* Interactive hero grid cells */
+.ks-grid-cell {
+  width: 60px; height: 60px;
+  box-sizing: border-box;
+  border: 0.5px solid rgba(255, 217, 0, 0.1);
+  background-color: transparent;
+  transition: background-color 0.3s ease-out;
+}
+
+/* Section callout label */
+.ks-callout-text {
+  color: var(--dark);
+  text-transform: uppercase;
+  font-weight: 900;
+  letter-spacing: 2px;
+  font-size: 13px;
+}
+
+/* Force text colors on card hover */
+.ks-hover-card:hover h1,
+.ks-hover-card:hover h2,
+.ks-hover-card:hover h3,
+.ks-hover-card:hover h4,
+.ks-hover-card:hover h5,
+.ks-hover-card:hover h6,
+.ks-hover-card:hover p,
+.ks-hover-card:hover span,
+.ks-hover-card:hover div,
+.ks-hover-card:hover .font-bold {
+  color: var(--white) !important;
+  border-color: rgba(255,255,255,0.2) !important;
+}
+
+.ks-hover-card:hover .ks-callout-text {
+  color: var(--yellow) !important;
+  opacity: 1 !important;
+}
+
+.ks-hover-card:hover .ks-hover-card-icon {
+  color: var(--yellow) !important;
+  background-color: rgba(255,255,255,0.1) !important;
+}
+
+@media (max-width: 768px) {
+  .ks-hover-card-wrapper {
+    border-right: 1.5px solid var(--dark) !important;
+  }
+  .ks-hover-card:hover { transform: translate(-8px, -8px); }
+  .feat-cards { grid-template-columns: 1fr !important; gap: 0 !important; }
 }
