@@ -62,6 +62,8 @@ function buildMermaidSyntax(data: MindmapNode[]): string {
 
     const lines = [
       `${indent}${labelFmt}`,
+      // Inject internal node ID as a CSS class so we can find it in the SVG
+      `${indent}:::node-${node.id.replace(/[^a-zA-Z0-9]/g, "")}`,
       `${indent}:::level${level}`
     ];
 
@@ -152,29 +154,34 @@ export default function Mindmap({ nodes: initialNodes, onNodeClick }: Props) {
             svgEl.removeAttribute("width");
             svgEl.removeAttribute("height");
 
-            // Tambahkan event listener click untuk integrasi ke PDF Viewer
-            svgEl.addEventListener("click", (e) => {
-              let current = e.target as Element | null;
-              while (current && current !== svgEl) {
-                if (current.tagName.toLowerCase() === "g") {
-                  const idAttr = current.getAttribute("id");
-                  if (idAttr) {
-                    const clickedNode = nodes.find((n) => {
-                      const sanitizedId = n.id.replace(/[^a-zA-Z0-9]/g, "");
-                      const idParts = idAttr.split("-");
-                      return idParts.includes(sanitizedId) || idAttr === sanitizedId;
-                    });
+            // Gunakan CAPTURE phase (true) dan pencarian node berbasis TEXT CONTENT (Label)
+            // Ini paling aman karena Mermaid Mindmap seringkali mengubah ID/Class secara internal.
+            svgEl.addEventListener("click", (e: MouseEvent) => {
+              const target = e.target as Element;
+              
+              // Cari group (<g>) terdekat yang merupakan node mindmap
+              const nodeGroup = target.closest("g.mindmap-node");
+              
+              if (nodeGroup) {
+                // Ambil teks di dalam node (Mermaid merendernya dalam <text> atau <span>)
+                const nodeText = (nodeGroup.textContent || "").trim();
+                const classAttr = nodeGroup.getAttribute("class") || "";
+                
+                console.log("Mindmap Node Clicked:", { label: nodeText, classes: classAttr });
 
-                    if (clickedNode && onNodeClickRef.current) {
-                      e.preventDefault();
-                      onNodeClickRef.current(clickedNode);
-                      return;
-                    }
+                // Cari node berdasarkan Label yang sama persis
+                const clickedNode = nodes.find((n) => n.label.trim() === nodeText);
+
+                if (clickedNode) {
+                  console.log("MATCH FOUND (by label):", clickedNode.label, "-> Page:", clickedNode.page_number);
+                  if (onNodeClickRef.current) {
+                    onNodeClickRef.current(clickedNode);
                   }
+                } else {
+                  console.warn("Click detected, but could not match label:", nodeText);
                 }
-                if (current) current = current.parentElement;
               }
-            });
+            }, true);
           }
         }
       } catch (err) {

@@ -128,8 +128,9 @@ export default function MindmapStudyPage({ params }: Props) {
                </div>
 
                <div className="flex-1 w-full bg-white relative">
+                 {/* Using key={currentPage} to force iframe recreation for reliable jumping */}
                  <iframe
-                   key={currentPage} /* Force reload if page changes to ensure PDF viewer jumps reliably */
+                   key={`${doc.file_url}-${currentPage}`}
                    src={`${doc.file_url}#page=${currentPage}&view=FitH`}
                    className="w-full h-full border-none absolute inset-0"
                    title="PDF Viewer"
