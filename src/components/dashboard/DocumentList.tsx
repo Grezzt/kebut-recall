@@ -1,9 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
-import { FileText, ExternalLink, ChevronRight, Clock, CheckCircle2, AlertCircle } from "lucide-react";
+import { FileText, Eye, ChevronRight, Clock, CheckCircle2, AlertCircle, X } from "lucide-react";
 
 interface Document {
   id: string;
@@ -22,6 +23,8 @@ interface DocumentListProps {
 }
 
 export default function DocumentList({ documents, error }: DocumentListProps) {
+  const [previewDoc, setPreviewDoc] = useState<Document | null>(null);
+
   if (error) {
     return (
       <div className="rounded-xl bg-red-500/10 p-6 text-sm text-red-400 border border-red-500/30">
@@ -99,22 +102,24 @@ export default function DocumentList({ documents, error }: DocumentListProps) {
 
                 <div className="flex items-center gap-3 w-full">
                     {doc.file_url && (
-                        <a
-                            href={doc.file_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex-1 flex items-center justify-center gap-2 p-2.5 bg-dark border-white/30 text-white rounded-xl transition-all border-2 shadow-[2px_2px_0px_#ffffff] hover:translate-x-0.5 hover:translate-y-0.5 group-hover/card:hover:shadow-none! group-hover/card:shadow-[4px_4px_0px_#ffffff]! group-hover/card:hover:translate-x-0.5! group-hover/card:hover:translate-y-0.5! group-hover/card:hover:bg-white! group-hover/card:hover:text-dark! group-hover/card:border-white group-hover/card:text-white group-hover/card:hover:border-dark text-sm font-bold"
-                            onClick={(e) => e.stopPropagation()}
+                        <button
+                            type="button"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setPreviewDoc(doc);
+                            }}
+                            className="flex-1 flex items-center justify-center gap-2 p-2.5 bg-dark border-white/30 text-white rounded-xl transition-all border-2 shadow-[2px_2px_0px_#ffffff] hover:translate-x-0.5 hover:translate-y-0.5 group-hover/card:hover:shadow-none! group-hover/card:shadow-[4px_4px_0px_#ffffff]! group-hover/card:hover:translate-x-0.5! group-hover/card:hover:translate-y-0.5! group-hover/card:hover:bg-white! group-hover/card:hover:text-dark! group-hover/card:border-white group-hover/card:text-white group-hover/card:hover:border-dark text-sm font-bold cursor-pointer"
                         >
-                            <ExternalLink className="w-4 h-4" strokeWidth={2.5} />
+                            <Eye className="w-4 h-4" strokeWidth={2.5} />
                             <span>PDF</span>
-                        </a>
+                        </button>
                     )}
 
                     {doc.status === "completed" && (
                         <Link
                             href={`/study/${doc.id}`}
-                            className="flex-2 flex items-center justify-center gap-2 p-2.5 bg-yellow text-dark rounded-xl transition-all border-2 border-dark shadow-[2px_2px_0px_#ffffff] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none group-hover/card:shadow-[4px_4px_0px_#ffffff]! group-hover/card:hover:translate-x-0.5! group-hover/card:hover:translate-y-0.5! group-hover/card:hover:shadow-[2px_2px_0px_#ffffff]! text-sm font-bold"
+                            className="flex-2 flex items-center justify-center gap-2 p-2.5 bg-yellow text-dark rounded-xl transition-all border-2 border-dark shadow-[2px_2px_0px_#ffffff] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none group-hover/card:shadow-[4px_4px_0px_#ffffff]! group-hover/card:hover:translate-x-0.5! group-hover/card:hover:translate-y-0.5! group-hover/card:hover:shadow-[2px_2px_0px_#ffffff]! text-sm font-bold w-1/2"
                             title="Mulai Belajar"
                         >
                             <span>Belajar</span>
@@ -126,6 +131,44 @@ export default function DocumentList({ documents, error }: DocumentListProps) {
           </div>
         </div>
       ))}
+
+      {previewDoc && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 sm:p-6" onClick={() => setPreviewDoc(null)}>
+            <div
+                className="w-full max-w-5xl h-full max-h-[90vh] bg-dark-90 rounded-2xl border-[3px] border-white/30 shadow-[8px_8px_0px_#ffffff] flex flex-col relative overflow-hidden animate-in fade-in zoom-in duration-200"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div className="flex-none h-14 w-full bg-dark/80 flex items-center justify-between px-6 border-b-[3px] border-white/30 z-10">
+                    <div className="flex items-center gap-4 truncate">
+                        <div className="flex items-center gap-2 flex-shrink-0 hidden sm:flex">
+                            <div className="w-3 h-3 rounded-full bg-red-400 border-2 border-white/30"></div>
+                            <div className="w-3 h-3 rounded-full bg-yellow border-2 border-white/30"></div>
+                            <div className="w-3 h-3 rounded-full bg-green border-2 border-white/30"></div>
+                        </div>
+                        <h2 className="text-white font-black truncate max-w-md sm:max-w-xl text-lg flex items-center gap-3">
+                            <span className="text-white/60">FILE PREVIEW</span>
+                            <span className="text-white/30">|</span>
+                            {previewDoc.title}
+                        </h2>
+                    </div>
+                    <button
+                        onClick={() => setPreviewDoc(null)}
+                        className="p-1 hover:bg-white/10 rounded-lg transition-colors flex-shrink-0 border-2 border-transparent hover:border-white/30"
+                    >
+                        <X className="w-6 h-6 text-white" />
+                    </button>
+                </div>
+
+                <div className="flex-1 w-full bg-white relative">
+                    <iframe
+                        src={`${previewDoc.file_url}#view=FitH`}
+                        className="w-full h-full border-none absolute inset-0 bg-white"
+                        title="PDF Viewer"
+                    />
+                </div>
+            </div>
+        </div>
+      )}
     </div>
   );
 }

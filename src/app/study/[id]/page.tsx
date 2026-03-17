@@ -6,6 +6,7 @@ import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import type { StudyDocument } from "@/types";
 import LoadingScreen from "@/components/LoadingScreen";
+import { X, Eye } from "lucide-react";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -15,6 +16,7 @@ export default function StudyOverviewPage({ params }: Props) {
   const { id } = use(params);
   const [doc, setDoc] = useState<StudyDocument | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showPdfPreview, setShowPdfPreview] = useState(false);
 
   useEffect(() => {
     async function loadDoc() {
@@ -61,14 +63,13 @@ export default function StudyOverviewPage({ params }: Props) {
             <div className="mt-2 flex flex-col sm:flex-row sm:items-center gap-3">
               <h1 className="text-3xl font-black text-white tracking-tight">{doc.title}</h1>
               {doc.file_url && (
-                <a
-                  href={doc.file_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-xl border-[2px] border-dark bg-yellow px-4 py-1.5 text-xs font-black text-dark hover:bg-yellow/80 shadow-[2px_2px_0px_#ffffff] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all flex items-center gap-2 w-fit uppercase tracking-widest"
+                <button
+                  onClick={() => setShowPdfPreview(true)}
+                  className="rounded-xl border-[2px] border-dark bg-yellow px-4 py-1.5 text-xs font-black text-dark hover:bg-yellow/80 shadow-[2px_2px_0px_#ffffff] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all flex items-center gap-2 w-fit uppercase tracking-widest cursor-pointer"
                 >
+                  <Eye className="w-4 h-4" strokeWidth={3} />
                   Lihat PDF
-                </a>
+                </button>
               )}
             </div>
           </div>
@@ -121,6 +122,45 @@ export default function StudyOverviewPage({ params }: Props) {
           </Link>
         </div>
       </div>
+
+      {/* PDF Modal Viewer */}
+      {showPdfPreview && doc?.file_url && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 sm:p-6" onClick={() => setShowPdfPreview(false)}>
+            <div
+                className="w-full max-w-5xl h-full max-h-[90vh] bg-dark-90 rounded-2xl border-[3px] border-white/30 shadow-[8px_8px_0px_#ffffff] flex flex-col relative overflow-hidden animate-in fade-in zoom-in duration-200"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div className="flex-none h-14 w-full bg-dark/80 flex items-center justify-between px-6 border-b-[3px] border-white/30 z-10">
+                    <div className="flex items-center gap-4 truncate">
+                        <div className="flex items-center gap-2 flex-shrink-0 hidden sm:flex">
+                            <div className="w-3 h-3 rounded-full bg-red-400 border-2 border-white/30"></div>
+                            <div className="w-3 h-3 rounded-full bg-yellow border-2 border-white/30"></div>
+                            <div className="w-3 h-3 rounded-full bg-green border-2 border-white/30"></div>
+                        </div>
+                        <h2 className="text-white font-black truncate max-w-md sm:max-w-xl text-lg flex items-center gap-3">
+                            <span className="text-white/60">FILE PREVIEW</span>
+                            <span className="text-white/30">|</span>
+                            {doc.title}
+                        </h2>
+                    </div>
+                    <button
+                        onClick={() => setShowPdfPreview(false)}
+                        className="p-1 hover:bg-white/10 rounded-lg transition-colors flex-shrink-0 border-2 border-transparent hover:border-white/30 cursor-pointer"
+                    >
+                        <X className="w-6 h-6 text-white" />
+                    </button>
+                </div>
+
+                <div className="flex-1 w-full bg-white relative">
+                    <iframe
+                        src={`${doc.file_url}#view=FitH`}
+                        className="w-full h-full border-none absolute inset-0 bg-white"
+                        title="PDF Viewer"
+                    />
+                </div>
+            </div>
+        </div>
+      )}
     </div>
   );
 }

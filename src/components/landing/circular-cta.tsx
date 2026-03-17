@@ -91,7 +91,7 @@ const CircularCTASection = () => {
           <span style={{ color: "var(--yellow)" }}>Ujian Besok?</span>
         </h2>
         <p className="text-xl md:text-2xl text-white/90 mb-10 font-medium max-w-2xl mx-auto">
-          Sekarang Giliranmu! Mulai belajar pintar pakai AI.
+          Sekarang Giliranmu! Mulai belajar Lebih Efektif dengan AI.
         </p>
         <button
           onClick={() => router.push("/login")}

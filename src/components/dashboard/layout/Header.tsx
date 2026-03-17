@@ -7,7 +7,7 @@ interface HeaderProps {
 
 export default function Header({ title, subtitle }: HeaderProps) {
   return (
-    <div className="bg-dark/80 backdrop-blur-md border-b-2 border-white/20 px-8 py-6 sticky top-0 z-10 ks-grid-bg">
+    <div className="bg-dark/80 backdrop-blur-md border-b-2 border-white/20 px-8 py-6 sticky top-0 z-0 ks-grid-bg">
       <div className="flex items-center gap-4 bg-dark-90 p-2 rounded-2xl border-2 border-white/30 w-fit shadow-[4px_4px_0px_#ffffff]">
         <div className="w-12 h-12 rounded-xl bg-purple border-2 border-white/30 flex items-center justify-center">
           <FolderOpen className="text-white w-6 h-6" strokeWidth={2.5} />
