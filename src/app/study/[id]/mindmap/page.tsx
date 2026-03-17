@@ -31,19 +31,12 @@ export default function MindmapStudyPage({ params }: Props) {
   useEffect(() => {
     async function loadDoc() {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
 
-      if (!user) {
-        redirect("/login");
-        return;
-      }
-
-      // Restrict fetch to doc ID AND user ID for security
+      // Fetch by ID only to allow public access
       const { data, error } = await supabase
         .from("study_documents")
         .select("*")
         .eq("id", id)
-        .eq("user_id", user.id)
         .single();
 
       if (error) {

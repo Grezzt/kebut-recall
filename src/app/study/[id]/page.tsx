@@ -21,19 +21,12 @@ export default function StudyOverviewPage({ params }: Props) {
   useEffect(() => {
     async function loadDoc() {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
 
-      if (!user) {
-        redirect("/login");
-        return;
-      }
-
-      // Restrict fetch to doc ID AND user ID for security
+      // Fetch by ID only to allow public access
       const { data, error } = await supabase
         .from("study_documents")
         .select("*")
         .eq("id", id)
-        .eq("user_id", user.id)
         .single();
 
       if (error) {
@@ -57,9 +50,9 @@ export default function StudyOverviewPage({ params }: Props) {
         {/* Header */}
         <div className="mb-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <Link href="/dashboard" className="text-sm font-bold text-white/60 hover:text-white flex items-center gap-2 mb-2 transition-colors">
-              <span className="text-lg leading-none">←</span> Kembali ke Dashboard
-            </Link>
+            <button onClick={() => window.history.length > 2 ? window.history.back() : window.location.href = '/explore'} className="text-sm font-bold text-white/60 hover:text-white flex items-center gap-2 mb-2 transition-colors cursor-pointer outline-none bg-transparent border-none p-0">
+              <span className="text-lg leading-none">←</span> Kembali
+            </button>
             <div className="mt-2 flex flex-col sm:flex-row sm:items-center gap-3">
               <h1 className="text-3xl font-black text-white tracking-tight">{doc.title}</h1>
               {doc.file_url && (

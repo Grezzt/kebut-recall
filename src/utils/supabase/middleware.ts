@@ -33,7 +33,6 @@ export async function updateSession(request: NextRequest) {
 
   // Protect private routes
   const isPrivateRoute = request.nextUrl.pathname.startsWith('/dashboard') ||
-                         request.nextUrl.pathname.startsWith('/study') ||
                          request.nextUrl.pathname.startsWith('/create')
 
   if (isPrivateRoute && !user) {

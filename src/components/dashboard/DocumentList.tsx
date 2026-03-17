@@ -22,9 +22,10 @@ interface Document {
 interface DocumentListProps {
   documents: Document[] | null;
   error: any;
+  isExplore?: boolean;
 }
 
-export default function DocumentList({ documents, error }: DocumentListProps) {
+export default function DocumentList({ documents, error, isExplore = false }: DocumentListProps) {
   const [previewDoc, setPreviewDoc] = useState<Document | null>(null);
   const [docToDelete, setDocToDelete] = useState<Document | null>(null);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
@@ -69,11 +70,13 @@ export default function DocumentList({ documents, error }: DocumentListProps) {
         <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border-2 border-white/30 -rotate-6">
             <FileText className="w-8 h-8 text-white" strokeWidth={2.5} />
         </div>
-        <h3 className="text-xl font-black text-white mb-2 uppercase tracking-tight">Belum Ada Materi</h3>
-        <p className="font-bold text-gray max-w-sm mx-auto mb-8">Kamu belum mengunggah dokumen apapun. Mulai unggah PDF untuk membuat bahan belajarmu.</p>
-        <Link href="/create" className="btn-ks-accent border-2 border-dark shadow-[4px_4px_0px_0px_#ffffff] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#ffffff] transition-all">
-            Buat Materi Pertama
-        </Link>
+        <h3 className="text-xl font-black text-white mb-2 uppercase tracking-tight">{isExplore ? "Belum Ada Materi Terpublikasi" : "Belum Ada Materi"}</h3>
+        <p className="font-bold text-gray max-w-sm mx-auto mb-8">{isExplore ? "Belum ada dokumen publik yang berhasil dibuat dan tersedia untuk umum." : "Kamu belum mengunggah dokumen apapun. Mulai unggah PDF untuk membuat bahan belajarmu."}</p>
+        {!isExplore && (
+          <Link href="/create" className="btn-ks-accent border-2 border-dark shadow-[4px_4px_0px_0px_#ffffff] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#ffffff] transition-all">
+              Buat Materi Pertama
+          </Link>
+        )}
       </div>
     );
   }
@@ -95,6 +98,7 @@ export default function DocumentList({ documents, error }: DocumentListProps) {
                                 <CheckCircle2 className="w-3.5 h-3.5" strokeWidth={3} />
                                 Selesai
                             </span>
+                            {!isExplore && (
                             <button
                                 onClick={(e) => {
                                   e.preventDefault();
@@ -107,6 +111,7 @@ export default function DocumentList({ documents, error }: DocumentListProps) {
                             >
                                 <Trash2 className="w-4 h-4" strokeWidth={2.5} />
                             </button>
+                            )}
                         </div>
                     ) : doc.status === "failed" ? (
                         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black bg-red-500/10 text-red-500 border border-red-500/30 uppercase tracking-wide">

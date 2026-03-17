@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FolderOpen, LogOut, Home, GalleryVerticalEnd, Gamepad2, BrainCircuit } from "lucide-react";
+import { FolderOpen, LogOut, Home, GalleryVerticalEnd, Gamepad2, BrainCircuit, Compass } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 
 export default function Sidebar() {
@@ -31,6 +31,17 @@ export default function Sidebar() {
         >
           <FolderOpen size={18} strokeWidth={2.5} />
           <span>Dokumen Saya</span>
+        </Link>
+        <Link
+          href="/explore"
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${
+            pathname === '/explore'
+              ? 'bg-purple border-2 border-white/30 text-white shadow-[3px_3px_0px_#ffffff] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0px_#ffffff]'
+              : 'border-2 border-transparent text-gray hover:text-white hover:bg-white/10'
+          }`}
+        >
+          <Compass size={18} strokeWidth={2.5} />
+          <span>Explore</span>
         </Link>
         <Link
           href="/dashboard/global-flashcard"
