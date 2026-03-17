@@ -1,44 +1,59 @@
-﻿# 🚀 Smart-SKS (Sistem Kebut Semalam)
+﻿# Dokumentasi Proyek Aplikasi Web
 
-## 📌 Ide Aplikasi
-**Smart-SKS** adalah sebuah platform edukasi Generative AI yang berfungsi sebagai Pabrik Pembuat Aplikasi Belajar Mini (*Interactive Study-Kit*).
-Sistem ini memecahkan masalah mahasiswa yang harus membaca ratusan halaman dokumen statis (PDF/PPT) sebelum ujian (budaya SKS).
+## Profil Aplikasi
 
-Berbeda dengan sekadar chatbot biasa, Smart-SKS TIDAK menghasilkan paragraf panjang. Aplikasi ini mengekstrak materi menjadi terstruktur menggunakan Gemini AI dan merendernya secara real-time menjadi UI interaktif.
+Nama Website : Kebut-Recall (Aplikasi Pembelajaran Interaktif Menggunakan Metode Belajar Active Recall Otomatis Menggunakan AI)
+Nama Tim: CH Lele Mentah Bergizii
+Dengan Backend : Tidak
+Service Database: Supabase
+Service Storage Bucket: Cloudinarry
+Daftar Fitur Utama:
 
-## ✨ Fitur Utama (Gamifikasi UX)
-1. **Interactive Flashcards & Matching Game**: Kartu bolak-balik digital untuk *active recall*.
-2. **Try-Out Simulator (Gamified Quiz)**: Kuis Pilihan Ganda interaktif dengan timer, skor otomatis, dan referensi jawaban.
-3. **Mind-Map Otomatis**: Diagram visual interaktif.
-
-## 🛠️ Arsitektur & Tech Stack
-- **Frontend**: Next.js, Tailwind CSS
-- **Backend**: Supabase (PostgreSQL, Storage, Auth)
-- **AI Engine**: Google Gemini API + LangChain
-- **UI/Animasi**: Framer Motion, React Flow
+1. Interactive Flashcards & Matching Game: Sistem recall aktif menggunakan presentasi kartu digital dan permainan mencocokkan.
+2. Try-Out Simulator (Gamified Quiz): Modul evaluasi komprehensif berbasis pilihan ganda dengan pengatur waktu tempuh, kalkulasi skor otomatis, dan referensi presisi.
+3. Mind-Map Automation: Generasi diagram visual interaktif secara otomatis dari teks atau dokumen masukan.
+4. Pengalaman Belajar Tergamifikasi: Mengintegrasikan elemen permainan interaktif dalam proses belajar untuk menciptakan suasana yang atraktif, dinamis, dan mencegah kebosanan pengguna.
 
 ---
 
-## 🗺️ Roadmap & Todo List (Pengerjaan)
+## Arsitektur Sistem dan Teknologi
 
-### Phase 1: Inisialisasi & Persiapan (✅ DONE)
-- [x] Setup proyek dengan Next.js
-- [x] Instal dependensi (Supabase, Tailwind, Framer Motion)
-- [x] Schema Database JSONB di Supabase
-- [x] Types/Interfaces di Next.js
+Sistem dirancang dengan arsitektur Berikut.
 
-### Phase 2: Gamifikasi UI / Front-End Build (🚧 CURRENT)
-- [ ] Membuat kerangka Dashboard
-- [ ] Komponen **Interactive Flashcard** (Animasi Flip by Framer Motion)
-- [ ] Komponen **Quiz Evaluator** (Sistem Skor, Timer, Validasi Jawaban)
-- [ ] Integrasi Dummy Data JSON ke Game
+- Front-End: Next.js, React, Tailwind CSS
+- Database Service : Supabase (PostgreSQL, Storage, Authentication)
+- Storage Service: Cloudinary
+- Kecerdasan Buatan (AI Engine): LLM API terintegrasi
+- Antarmuka Visual & Interaksi: Framer Motion, React Flow
 
-### Phase 3: AI Engine & Backend Integration (⏳ TODO)
-- [ ] Upload Dokumen PDF ke Supabase
-- [ ] Ekstraksi PDF Teks (LangChain chunking)
-- [ ] Prompt ke Gemini API untuk ekstrak JSON strict
-- [ ] Sinkronisasi status ke Supabase
+## Struktur Direktori Utama
 
-### Phase 4: Finalisasi (⏳ TODO)
-- [ ] Implementasi Supabase Auth
-- [ ] Deployment ke Vercel
+- /src/app: Inti aplikasi yang menjalankan sistem perutean aplikasi.
+- /src/components: Komponen modular antarmuka pengguna (Flashcard, Quiz, MatchingGame, Mindmap).
+- /src/api: Titik akhir serverless untuk memproses integrasi backend dan komputasi layanan kognitif.
+- /supabase: Definisi skema basis data dan berkas migrasi.
+
+## Petunjuk Instalasi Server (Local Deployment)
+
+1. Salin repositori ke dalam ekosistem pengembangan lokal.
+2. Lakukan instalasi dependensi menggunakan manajer paket (npm/yarn/pnpm) melalui perintah instalasi standar.
+3. Konfigurasikan variabel lingkungan sistem (.env) dan lengkapi konfigurasi peladen basis data serta kredensial API. (Lihat bagian Konfigurasi Variabel Lingkungan di bawah).
+4. Inisiasi server pengembangan untuk validasi fungsional aplikasi.
+
+## Konfigurasi Variabel Lingkungan (.env)
+
+Buat file `.env.local` di direktori root aplikasi (sejajar dengan `package.json`) dan sesuaikan nilainya dengan kredensial layanan yang telah Anda konfigurasikan:
+
+```env
+# Konfigurasi Supabase (Database & Authentication)
+NEXT_PUBLIC_SUPABASE_URL=https://[PROJECT_ID].supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=[SUPABASE_ANON_KEY]
+
+# Konfigurasi Cloudinary (Storage Service)
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=[NAMA_CLOUD_CLOUDINARY]
+CLOUDINARY_API_KEY=[KUNCI_API_CLOUDINARY]
+CLOUDINARY_API_SECRET=[KUNCI_RAHASIA_CLOUDINARY]
+
+# Konfigurasi AI Engine (Generative AI)
+GEMINI_API_KEY=[KUNCI_API_GEMINI]
+```

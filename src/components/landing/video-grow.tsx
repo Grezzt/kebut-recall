@@ -15,7 +15,7 @@ export default function VideoGrow() {
   const imgRef = useRef<HTMLImageElement>(null);
 
   // Kata yang akan dianimasikan
-  const text = "Belajar Seru";
+  const text = "Makin Seru";
   const chars = text.split("");
 
   // Fix untuk masalah ScrollTrigger layout shift (seperti saat chat bubble atasnya expand)
