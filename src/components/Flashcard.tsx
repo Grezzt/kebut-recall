@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Lightbulb, RefreshCcw, LayoutTemplate } from "lucide-react";
+import { ChevronLeft, ChevronRight, Lightbulb, RefreshCcw, LayoutTemplate, CheckCircle2 } from "lucide-react";
 import type { Flashcard as FlashcardType } from "@/types";
+import MatchingGame from "./MatchingGame";
 
 interface Props {
   flashcards: FlashcardType[];
@@ -18,12 +19,73 @@ export default function Flashcard({ flashcards: initialFlashcards, documentId }:
   const [direction, setDirection] = useState(0); // 1 = next, -1 = prev
   const [isTermFirst, setIsTermFirst] = useState(true);
 
+  const [known, setKnown] = useState<Set<number>>(new Set());
+  const [isGameMode, setIsGameMode] = useState(false);
+  const [isGameFinished, setIsGameFinished] = useState(false);
+  const [gameStats, setGameStats] = useState({ mistakes: 0, time: 0, totalPairs: 0 });
+  const [showCompletion, setShowCompletion] = useState(false);
+
   // Sync internal state if props change
   useEffect(() => {
     setFlashcards(initialFlashcards);
     setCurrentIndex(0);
     setFlipped(false);
+    setIsGameMode(false);
+    setIsGameFinished(false);
+    setGameStats({ mistakes: 0, time: 0, totalPairs: 0 });
+    setShowCompletion(false);
   }, [initialFlashcards]);
+
+  // Load known set from localStorage
+  useEffect(() => {
+    if (documentId) {
+      const stored = localStorage.getItem(`flashcards_known_${documentId}`);
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            setKnown(new Set(parsed));
+          }
+        } catch (e) {}
+      }
+    }
+  }, [documentId]);
+
+  // Save known set to localStorage
+  useEffect(() => {
+    if (documentId) {
+      localStorage.setItem(`flashcards_known_${documentId}`, JSON.stringify(Array.from(known)));
+    }
+
+    // Check if fully understood
+    if (flashcards.length > 0 && known.size === flashcards.length && !isGameMode && !showCompletion) {
+      setShowCompletion(true);
+    }
+  }, [known, documentId, flashcards.length, isGameMode, showCompletion]);
+
+  const toggleKnown = (e: React.MouseEvent, index: number) => {
+    e.stopPropagation();
+    setKnown((prev) => {
+      const next = new Set(prev);
+      next.has(index) ? next.delete(index) : next.add(index);
+      return next;
+    });
+  };
+
+  const handleStartGame = () => {
+    setShowCompletion(false);
+    setIsGameMode(true);
+  };
+
+  const resetProgress = () => {
+    setKnown(new Set());
+    setIsGameMode(false);
+    setShowCompletion(false);
+    setCurrentIndex(0);
+    if (documentId) {
+      localStorage.removeItem(`flashcards_known_${documentId}`);
+    }
+  };
 
   // Keyboard navigation
   useEffect(() => {
@@ -59,17 +121,116 @@ export default function Flashcard({ flashcards: initialFlashcards, documentId }:
 
   if (!flashcards || flashcards.length === 0) return null;
 
+  if (isGameMode) {
+    if (isGameFinished) {
+      const totalAttempts = Math.max(1, gameStats.totalPairs + gameStats.mistakes);
+      const accuracy = Math.round((gameStats.totalPairs / totalAttempts) * 100);
+
+      return (
+        <div className="w-full flex justify-center py-10">
+          <div className="bg-[#202230] border-[3px] border-purple max-w-[600px] w-full rounded-2xl p-10 flex flex-col items-center text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+             <div className="w-20 h-20 bg-purple/20 rounded-full flex items-center justify-center mb-6">
+                <LayoutTemplate size={40} className="text-purple-400" />
+             </div>
+             <h2 className="text-3xl font-black text-white uppercase tracking-tight mb-4">Selesai!</h2>
+
+             <div className="flex gap-4 mb-8 w-full justify-center">
+               <div className="bg-[#2A2B40] border border-white/10 rounded-xl p-4 flex flex-col items-center min-w-[120px]">
+                 <span className="text-xs font-black uppercase text-white/50 mb-1">Waktu</span>
+                 <span className="text-2xl font-black text-white">{gameStats.time}s</span>
+               </div>
+               <div className="bg-[#2A2B40] border border-white/10 rounded-xl p-4 flex flex-col items-center min-w-[120px]">
+                 <span className="text-xs font-black uppercase text-white/50 mb-1">Salah</span>
+                 <span className="text-2xl font-black text-red-500">{gameStats.mistakes}</span>
+               </div>
+               <div className="bg-[#2A2B40] border border-white/10 rounded-xl p-4 flex flex-col items-center min-w-[120px]">
+                 <span className="text-xs font-black uppercase text-white/50 mb-1">Akurasi</span>
+                 <span className="text-2xl font-black text-green">{accuracy}%</span>
+               </div>
+             </div>
+
+             <p className="text-gray mb-8 font-medium">
+               {accuracy >= 80 ? "Luar biasa! Ingatanmu sangat tajam. 🎉" : accuracy >= 50 ? "Bagus! Terus berlatih agar lebih cepat. 👍" : "Ayo coba lagi, kamu pasti bisa! 💪"}
+             </p>
+
+             <div className="flex gap-4 w-full">
+                <button
+                  onClick={() => { setIsGameFinished(false); setIsGameMode(false); }}
+                  className="flex-1 py-4 rounded-xl border-2 border-white/20 text-white font-bold hover:bg-white/5 transition-colors"
+                >
+                  Kembali
+                </button>
+                <button
+                   onClick={() => { setIsGameFinished(false); setGameStats({ mistakes: 0, time: 0, totalPairs: 0 }); }}
+                   className="flex-1 py-4 rounded-xl bg-purple border-2 border-purple-400 text-white font-bold shadow-[4px_4px_0px_rgba(255,255,255,0.2)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+                >
+                  Mainkan Lagi
+                </button>
+             </div>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+       <div className="w-full relative pt-8">
+          <button
+             onClick={() => setIsGameMode(false)}
+             className="absolute top-0 left-0 text-sm font-bold text-white/50 hover:text-white transition-colors"
+          >
+            Kembali
+          </button>
+          <MatchingGame
+            flashcards={flashcards}
+            onFinish={(mistakes, time, totalPairs) => {
+              setGameStats({ mistakes, time, totalPairs });
+              setIsGameFinished(true);
+            }}
+          />
+       </div>
+    );
+  }
+
+  if (showCompletion) {
+    return (
+      <div className="w-full flex justify-center py-10">
+        <div className="bg-[#202230] border-[3px] border-green max-w-[600px] w-full rounded-2xl p-10 flex flex-col items-center text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+           <div className="w-20 h-20 bg-green/20 rounded-full flex items-center justify-center mb-6">
+              <CheckCircle2 size={40} className="text-green" />
+           </div>
+           <h2 className="text-3xl font-black text-white uppercase tracking-tight mb-4">Luar Biasa!</h2>
+           <p className="text-gray mb-8 font-medium">Anda telah menandai semua {flashcards.length} kartu sebagai "Sudah Paham". Mari uji ingatan Anda dengan sesi Mencocokkan Kartu!</p>
+
+           <div className="flex gap-4 w-full">
+              <button
+                onClick={resetProgress}
+                className="flex-1 py-4 rounded-xl border-2 border-white/20 text-white font-bold hover:bg-white/5 transition-colors"
+              >
+                Ulangi Flashcard
+              </button>
+              <button
+                onClick={handleStartGame}
+                className="flex-1 py-4 rounded-xl bg-purple border-2 border-purple-400 text-white font-bold shadow-[4px_4px_0px_rgba(255,255,255,0.2)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+              >
+                Mulai Mencocokkan
+              </button>
+           </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full flex justify-center py-4 text-[#E2E4E9]">
-      <div className="w-full max-w-[1000px] flex flex-col min-h-[600px] bg-[#0A092D] rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden font-sans border-2 border-white/5">
+      <div className="w-full max-w-[1000px] flex flex-col min-h-[600px] bg-[#202230] rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden font-sans border-2 border-white/5">
 
         {/* Top Header */}
         <div className="flex flex-col sm:flex-row justify-between items-center px-6 py-6 border-b border-white/5 gap-4">
             <div className="flex items-center gap-2 font-bold text-lg text-white">
-                <div className="bg-blue-600/20 p-1.5 rounded-lg border border-blue-500/30">
-                   <LayoutTemplate className="text-blue-400" size={20} />
+                <div className="bg-purple-600/20 p-1.5 rounded-lg border border-purple-500/30">
+                   <LayoutTemplate className="text-purple-400" size={20} />
                 </div>
-                <span className="cursor-pointer hover:text-blue-400 transition-colors flex items-center gap-2">
+                <span className="cursor-pointer hover:text-purple-400 transition-colors flex items-center gap-2">
                    Flashcard
                    {/* <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg> */}
                 </span>
@@ -94,7 +255,7 @@ export default function Flashcard({ flashcards: initialFlashcards, documentId }:
         {/* Stepper Progress Bar */}
         <div className="w-full h-1.5 bg-white/5 relative">
             <div
-                className="h-full bg-blue-500 transition-all duration-300 ease-out"
+                className="h-full bg-purple transition-all duration-300 ease-out"
                 style={{ width: `${((currentIndex + 1) / flashcards.length) * 100}%` }}
             />
         </div>
@@ -152,9 +313,9 @@ export default function Flashcard({ flashcards: initialFlashcards, documentId }:
                                     style={{ transformStyle: "preserve-3d", transformOrigin: "center center" }}
                                     className="relative w-full h-full"
                                  >
-                                      {/* Front Face */}
+                                       {/* Front Face */}
                                       <div
-                                          className="absolute inset-0 w-full h-full bg-[#202230] rounded-2xl p-6 sm:p-10 flex flex-col text-white shadow-[0_10px_40px_rgba(0,0,0,0.5)] border-2 border-white/5"
+                                          className={`absolute inset-0 w-full h-full bg-[#202230] rounded-2xl p-6 sm:p-10 flex flex-col text-white shadow-[0_10px_40px_rgba(0,0,0,0.5)] border-2 ${known.has(index) ? 'border-green' : 'border-white/5'}`}
                                           style={{ backfaceVisibility: "hidden" }}
                                       >
                                           <div className="flex justify-between items-start w-full">
@@ -167,11 +328,22 @@ export default function Flashcard({ flashcards: initialFlashcards, documentId }:
                                                   {isTermFirst ? card.term : card.definition}
                                               </p>
                                           </div>
+                                          {isTop && (
+                                              <div className="w-full flex justify-center mt-6">
+                                                  <button
+                                                      onClick={(e) => toggleKnown(e, index)}
+                                                      className={`px-6 py-2.5 rounded-xl font-bold text-sm tracking-wider uppercase transition-all shadow-[2px_2px_0px_rgba(255,255,255,0.2)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none border-2
+                                                        ${known.has(index) ? 'bg-[#202230] border-green text-white' : 'border-white/20 text-white/70 hover:text-white hover:border-white'}`}
+                                                  >
+                                                      {known.has(index) ? "✓ Sudah Paham" : "Tandai Paham"}
+                                                  </button>
+                                              </div>
+                                          )}
                                       </div>
 
                                       {/* Back Face */}
                                       <div
-                                          className="absolute inset-0 w-full h-full bg-[#202230] rounded-2xl p-6 sm:p-10 flex flex-col text-white shadow-[0_10px_40px_rgba(0,0,0,0.5)] border-2 border-white/5"
+                                          className={`absolute inset-0 w-full h-full bg-purple rounded-2xl p-6 sm:p-10 flex flex-col text-white shadow-[0_10px_40px_rgba(0,0,0,0.5)] border-2 ${known.has(index) ? 'border-green' : 'border-white/5'}`}
                                           style={{ backfaceVisibility: "hidden", transform: "rotateX(180deg)" }}
                                       >
                                           <div className="flex justify-between items-start w-full">
@@ -184,6 +356,17 @@ export default function Flashcard({ flashcards: initialFlashcards, documentId }:
                                                   {isTermFirst ? card.definition : card.term}
                                               </p>
                                           </div>
+                                          {isTop && (
+                                              <div className="w-full flex justify-center mt-6">
+                                                  <button
+                                                      onClick={(e) => toggleKnown(e, index)}
+                                                      className={`px-6 py-2.5 rounded-xl font-bold text-sm tracking-wider uppercase transition-all shadow-[2px_2px_0px_rgba(255,255,255,0.2)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none border-2
+                                                        ${known.has(index) ? 'bg-green border-green text-white' : 'border-white/20 text-white/70 hover:text-white hover:border-white'}`}
+                                                  >
+                                                      {known.has(index) ? "✓ Sudah Paham" : "Tandai Paham"}
+                                                  </button>
+                                              </div>
+                                          )}
                                       </div>
                                  </motion.div>
                              </motion.div>
