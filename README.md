@@ -2,11 +2,12 @@
 
 ## Profil Aplikasi
 
-Nama Website : Kebut-Recall (Aplikasi Pembelajaran Interaktif Menggunakan Metode Belajar Active Recall Otomatis Menggunakan AI)
-Nama Tim: CH Lele Mentah Bergizii
-Dengan Backend : Tidak
-Service Database: Supabase
-Service Storage Bucket: Cloudinarry
+- Nama Website : Kebut-Recall (Aplikasi Pembelajaran Interaktif Menggunakan Metode Belajar Active Recall Otomatis Menggunakan AI)
+- Nama Tim: CH Lele Mentah Bergizii
+- Dengan Backend : Tidak
+- Service Database: Supabase
+- Service Storage Bucket: Cloudinarry
+
 Daftar Fitur Utama:
 
 1. Interactive Flashcards & Matching Game: Sistem recall aktif menggunakan presentasi kartu digital dan permainan mencocokkan.
