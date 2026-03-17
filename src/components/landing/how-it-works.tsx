@@ -1,179 +1,179 @@
 "use client";
 
-import { useRef } from "react";
+import React, { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { FileUp, Sparkles, BrainCircuit, GraduationCap } from "lucide-react";
 
-gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
-const steps = [
+const messages = [
   {
-    num: "01",
-    title: "Unggah Materi",
-    desc: "Drag-and-drop file PDF materi kuliah, ketik catatan manual, atau tuliskan topik yang ingin dipelajari.",
-    icon: <FileUp size={24} strokeWidth={1.5} />,
+    id: 1,
+    sender: "user",
+    text: "Besok ujian tapi materi numpuk banget, pusing bacanya gimana dong?",
   },
   {
-    num: "02",
-    title: "AI Bekerja",
-    desc: "Sistem cerdas kami membaca dan merangkum inti materi dalam beberapa detik tanpa perlu pusing.",
-    icon: <Sparkles size={24} strokeWidth={1.5} className="text-yellow" />,
+    id: 2,
+    sender: "bot",
+    text: "Tenang aja! Drag-and-drop file PDF materimu. Nanti AI kami yang urus semuanya.",
   },
   {
-    num: "03",
-    title: "Pilih Mode Belajar",
-    desc: "Kustomisasi cara belajarmu: berlatih dengan Quiz, hafalkan lewat Flashcard, atau pahami konsep dengan Mind-Map.",
-    icon: <BrainCircuit size={24} strokeWidth={1.5} />,
+    id: 3,
+    sender: "user",
+    text: "Wah praktis! Terus habis kelar di-upload bakal diapain materinya?",
   },
   {
-    num: "04",
-    title: "Siap Ujian",
-    desc: "Selesaikan sesi belajar dengan efektif, ulangi yang salah, dan melangkah ke ujian dengan percaya diri penuh.",
-    icon: <GraduationCap size={24} strokeWidth={1.5} />,
+    id: 4,
+    sender: "bot",
+    text: "Sistem cerdas kami langsung merangkum inti dari materi kamu dalam hitungan detik. Nggak perlu pusing baca dari nol!",
   },
+  {
+    id: 5,
+    sender: "bot",
+    text: "Setelah itu, kamu bebas pilih cara belajarnya: hafalan cepat pakai Flashcard, uji kemampuan dengan Quiz, atau pahami konsep lewat Mind-Map. Semua dalam satu platform yang mudah digunakan!",
+  },
+  {
+    id: 6,
+    sender: "bot",
+    text: "Cukup selesaikan sesinya, ulangi yang salah, dan kamu siap maju ujian dengan percaya diri penuh!!!",
+  }
 ];
 
 export default function HowItWorks() {
-  const ref = useRef<HTMLElement>(null);
+  const containerRef = useRef<HTMLElement>(null);
 
   useGSAP(
     () => {
-      gsap.from(".hiw-heading", {
-        scrollTrigger: { trigger: ref.current, start: "top 75%" },
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top 75%",
+        },
+      });
+
+      tl.from(".hiw-heading", {
         y: 30,
         opacity: 0,
         duration: 0.8,
+        stagger: 0.1,
       });
-      gsap.from(".hiw-step", {
-        scrollTrigger: { trigger: ".hiw-steps", start: "top 80%" },
-        y: 30,
-        opacity: 0,
-        stagger: 0.12,
-        duration: 0.6,
-        ease: "power2.out",
+
+      messages.forEach((msg) => {
+        const indicator =
+          msg.sender === "user" ? ".typing-user" : ".typing-bot";
+
+        // Typing indicator muncul
+        tl.fromTo(
+          indicator,
+          { display: "none", opacity: 0, y: 10 },
+          { display: "flex", opacity: 1, y: 0, duration: 0.3 }
+        );
+
+        // Durasi mengetik
+        tl.to({}, { duration: 0.6 });
+
+        // Typing indicator hilang
+        tl.to(indicator, {
+          opacity: 0,
+          y: 10,
+          duration: 0.25,
+          display: "none",
+        });
+
+        // Row muncul
+        tl.set(`.chat-row-${msg.id}`, { display: "flex" });
+
+        // Bubble muncul
+        tl.from(`.chat-${msg.id}`, {
+          opacity: 0,
+          y: 20,
+          scale: 0.95,
+          duration: 0.4,
+          ease: "power2.out",
+        });
+
+        // Jeda antar pesan
+        tl.to({}, { duration: 0.2 });
       });
     },
-    { scope: ref }
+    { scope: containerRef }
   );
 
   return (
     <section
       id="cara-kerja"
-      ref={ref}
-      style={{
-        backgroundColor: "var(--dark)",
-        padding: "100px 0",
-      }}
+      ref={containerRef}
+      className="ks-grid-bg py-24 px-4 flex flex-col items-center justify-center overflow-hidden"
+      style={{ backgroundColor: "var(--dark)" }}
     >
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
-        {/* Label */}
+      <div className="text-center mb-16 px-4">
         <p
-          style={{
-            color: "var(--yellow)",
-            fontWeight: 900,
-            textTransform: "uppercase",
-            letterSpacing: "2px",
-            fontSize: 13,
-            marginBottom: 12,
-          }}
+          className="hiw-heading mb-3 font-black uppercase tracking-[2px] text-[13px]"
+          style={{ color: "var(--yellow)" }}
         >
           Proses Instan
         </p>
-
-        {/* Heading */}
         <h2
-          className="hiw-heading"
-          style={{
-            color: "var(--white)",
-            fontSize: "clamp(28px, 4vw, 48px)",
-            fontWeight: 700,
-            lineHeight: 1.1,
-            letterSpacing: "-0.02em",
-            maxWidth: 600,
-            marginBottom: 64,
-          }}
+          className="hiw-heading text-4xl md:text-5xl font-bold tracking-tight max-w-[600px] mx-auto text-balance leading-tight"
+          style={{ color: "var(--white)" }}
         >
-          Dari materi numpuk ke siap ujian — cuma 4 langkah.
+          Dari materi numpuk ke siap ujian cuma hitungan detik.
         </h2>
+      </div>
 
-        {/* Steps grid */}
-        <div
-          className="hiw-steps"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: "0",
-          }}
-        >
-          {steps.map((step, i) => (
+      <div className="w-full max-w-2xl bg-white/5 border border-white/10 rounded-[2rem] p-6 md:p-8 backdrop-blur-sm">
+        <div className="flex flex-col gap-6">
+          {messages.map((msg) => (
             <div
-              key={step.num}
-              className="hiw-step"
-              style={{
-                borderLeft: i === 0 ? "none" : "1px solid rgba(255,217,0,0.15)",
-                padding: "0 32px 0 32px",
-                marginBottom: 0,
-                ...(i === 0 ? { paddingLeft: 0 } : {}),
-              }}
+              key={msg.id}
+              className={`chat-row-${msg.id} hidden w-full ${
+                msg.sender === "user" ? "justify-end" : "justify-start"
+              }`}
             >
-              {/* Step number */}
               <div
-                style={{
-                  color: "var(--yellow)",
-                  fontWeight: 900,
-                  fontSize: 40,
-                  lineHeight: 1,
-                  marginBottom: 20,
-                  fontVariantNumeric: "tabular-nums",
-                  letterSpacing: "-0.03em",
-                  opacity: 0.5,
-                }}
+                className={`chat-bubble chat-${msg.id} max-w-[90%] md:max-w-[80%] p-4 text-[15px] md:text-base leading-relaxed ${
+                  msg.sender === "user"
+                    ? "bg-light-blue text-dark font-medium rounded-2xl rounded-tr-none"
+                    : "bg-yellow text-dark font-medium rounded-2xl rounded-tl-none"
+                }`}
               >
-                {step.num}
+                {msg.text}
               </div>
-
-              {/* Icon */}
-              <div
-                style={{
-                  color: "var(--white)",
-                  marginBottom: 16,
-                  width: 48,
-                  height: 48,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  border: "1px solid rgba(255,217,0,0.3)",
-                  backgroundColor: "rgba(255,217,0,0.05)",
-                }}
-              >
-                {step.icon}
-              </div>
-
-              {/* Text */}
-              <h3
-                style={{
-                  color: "var(--white)",
-                  fontWeight: 700,
-                  fontSize: 18,
-                  marginBottom: 10,
-                  lineHeight: 1.3,
-                }}
-              >
-                {step.title}
-              </h3>
-              <p
-                style={{
-                  color: "rgba(255,255,255,0.6)",
-                  fontSize: 15,
-                  lineHeight: 1.6,
-                }}
-              >
-                {step.desc}
-              </p>
             </div>
           ))}
+
+          {/* Typing User */}
+          <div className="typing-user hidden justify-end">
+            <div className="bg-light-blue p-4 rounded-2xl rounded-tr-none flex gap-1.5 items-center">
+              <span className="w-2 h-2 bg-dark/60 rounded-full animate-bounce"></span>
+              <span
+                className="w-2 h-2 bg-dark/60 rounded-full animate-bounce"
+                style={{ animationDelay: "0.15s" }}
+              ></span>
+              <span
+                className="w-2 h-2 bg-dark/60 rounded-full animate-bounce"
+                style={{ animationDelay: "0.3s" }}
+              ></span>
+            </div>
+          </div>
+
+          {/* Typing Bot */}
+          <div className="typing-bot hidden justify-start">
+            <div className="bg-yellow p-4 rounded-2xl rounded-tl-none flex gap-1.5 items-center">
+              <span className="w-2 h-2 bg-dark/60 rounded-full animate-bounce"></span>
+              <span
+                className="w-2 h-2 bg-dark/60 rounded-full animate-bounce"
+                style={{ animationDelay: "0.15s" }}
+              ></span>
+              <span
+                className="w-2 h-2 bg-dark/60 rounded-full animate-bounce"
+                style={{ animationDelay: "0.3s" }}
+              ></span>
+            </div>
+          </div>
         </div>
       </div>
     </section>

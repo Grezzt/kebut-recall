@@ -103,11 +103,11 @@ export default function Navbar() {
           </div>
 
           {/* Middle Nav Links */}
-          <div className="hidden md:flex items-center gap-6 lg:gap-8 mr-2 ml-4">
+          {/* <div className="hidden md:flex items-center gap-6 lg:gap-8 mr-2 ml-4">
             <Link href="/explore" className="text-[12px] font-bold text-gray-900 hover:text-purple transition-colors uppercase tracking-[0.08em]">
               Explore
             </Link>
-          </div>
+          </div> */}
 
           {/* Right Box (Button) */}
           <div>
@@ -130,6 +130,10 @@ export default function Navbar() {
               <Home className="w-8 h-8 md:w-10 md:h-10 text-gray-800 group-hover:text-[#FFD900] transition-colors" />
               <span className="text-4xl md:text-6xl font-bold tracking-tight text-gray-900 uppercase">Home</span>
             </Link>
+            <Link href="/explore" onClick={() => setIsMenuOpen(false)} className="group flex items-center gap-6">
+              <Compass className="w-8 h-8 md:w-10 md:h-10 text-gray-800 group-hover:text-[#FFD900] transition-colors" />
+              <span className="text-4xl md:text-6xl font-bold tracking-tight text-gray-900 uppercase">Explore</span>
+            </Link>
             <Link href="#fitur" onClick={() => setIsMenuOpen(false)} className="group flex items-center gap-6">
               <FolderOpen className="w-8 h-8 md:w-10 md:h-10 text-gray-800 group-hover:text-[#FFD900] transition-colors" />
               <span className="text-4xl md:text-6xl font-bold tracking-tight text-gray-900 uppercase">Fitur</span>
@@ -137,10 +141,6 @@ export default function Navbar() {
             <Link href="#cara-kerja" onClick={() => setIsMenuOpen(false)} className="group flex items-center gap-6">
               <MessageCircle className="w-8 h-8 md:w-10 md:h-10 text-gray-800 group-hover:text-[#FFD900] transition-colors" />
               <span className="text-4xl md:text-6xl font-bold tracking-tight text-gray-900 uppercase">Cara Kerja</span>
-            </Link>
-            <Link href="/explore" onClick={() => setIsMenuOpen(false)} className="group flex items-center gap-6">
-              <Compass className="w-8 h-8 md:w-10 md:h-10 text-gray-800 group-hover:text-[#FFD900] transition-colors" />
-              <span className="text-4xl md:text-6xl font-bold tracking-tight text-gray-900 uppercase">Explore</span>
             </Link>
           </div>
 
