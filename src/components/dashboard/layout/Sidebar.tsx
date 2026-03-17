@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FolderOpen, LogOut, Home, GalleryVerticalEnd } from "lucide-react";
+import { FolderOpen, LogOut, Home, GalleryVerticalEnd, Gamepad2 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 
 export default function Sidebar() {
@@ -42,6 +42,17 @@ export default function Sidebar() {
         >
           <GalleryVerticalEnd size={18} strokeWidth={2.5} />
           <span>Koleksi Kartu Global</span>
+        </Link>
+        <Link
+          href="/dashboard/global-matching"
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${
+            pathname === '/dashboard/global-matching'
+              ? 'bg-purple border-2 border-white/30 text-white shadow-[3px_3px_0px_#ffffff] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0px_#ffffff]'
+              : 'border-2 border-transparent text-gray hover:text-white hover:bg-white/10'
+          }`}
+        >
+          <Gamepad2 size={18} strokeWidth={2.5} />
+          <span>Game Mencocokkan Universal</span>
         </Link>
         <Link
           href="/"
