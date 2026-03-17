@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { redirect } from 'next/navigation';
-import { supabase } from "@/lib/supabase";
 import { createClient } from "@/utils/supabase/server";
 import Sidebar from "@/components/dashboard/layout/Sidebar";
 import Header from "@/components/dashboard/layout/Header";
@@ -17,7 +16,7 @@ export default async function DashboardPage() {
     redirect('/login');
   }
 
-  const { data: documents, error } = await supabase
+  const { data: documents, error } = await supabaseServer
     .from("study_documents")
     .select("id, title, status, flashcards, quiz, mindmap, created_at, file_url")
     .eq("user_id", user.id)
