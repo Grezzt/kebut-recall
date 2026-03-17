@@ -5,20 +5,52 @@ import { createClient } from "@/utils/supabase/server";
 import Header from "@/components/dashboard/layout/Header";
 import DocumentList from "@/components/dashboard/DocumentList";
 import Sidebar from "@/components/dashboard/layout/Sidebar";
+import SearchAndFilter from "@/components/dashboard/SearchAndFilter";
+import Pagination from "@/components/dashboard/Pagination";
 import { Home } from "lucide-react";
 
 export const revalidate = 0; // Disable cache so list is always fresh
 
-export default async function ExplorePage() {
+const ITEMS_PER_PAGE = 25;
+
+export default async function ExplorePage({ searchParams }: { searchParams: Promise<{ q?: string, date?: string, page?: string }> }) {
   const supabaseServer = await createClient();
   const { data: { user } } = await supabaseServer.auth.getUser();
 
-  const { data: documents, error } = await supabase
+  const awaitedSearchParams = await searchParams;
+  const q = awaitedSearchParams?.q || "";
+  const dateStr = awaitedSearchParams?.date || "";
+  const pageStr = awaitedSearchParams?.page || "1";
+
+  const page = parseInt(pageStr) > 0 ? parseInt(pageStr) : 1;
+  const from = (page - 1) * ITEMS_PER_PAGE;
+  const to = from + ITEMS_PER_PAGE - 1;
+
+  let query = supabase
     .from("study_documents")
-    .select("id, title, status, flashcards, quiz, mindmap, created_at, file_url")
+    .select("id, title, status, flashcards, quiz, mindmap, created_at, file_url", { count: "exact" })
     .neq("status", "deleted")
-    .eq("status", "completed")
-    .order("created_at", { ascending: false });
+    .eq("status", "completed");
+
+  if (q) {
+    query = query.ilike("title", `%${q}%`);
+  }
+
+  if (dateStr) {
+    const startOfDay = new Date(dateStr);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(dateStr);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    query = query.gte("created_at", startOfDay.toISOString());
+    query = query.lte("created_at", endOfDay.toISOString());
+  }
+
+  const { data: documents, error, count } = await query
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  const totalPages = count ? Math.ceil(count / ITEMS_PER_PAGE) : 0;
 
   if (error) {
     console.error("Explore error:", error);
@@ -48,7 +80,9 @@ export default async function ExplorePage() {
 
         <div className="flex-1 overflow-y-auto p-8 relative z-0">
           <div className="max-w-7xl mx-auto w-full pb-20">
+            <SearchAndFilter />
             <DocumentList documents={documents} error={error} isExplore={true} />
+            <Pagination totalPages={totalPages} currentPage={page} />
           </div>
         </div>
       </main>
