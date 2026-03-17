@@ -157,7 +157,7 @@ body {
 }
 .ks-hover-card {
   padding: 24px 20px;
-  background-color: transparent;
+  background-color: var(--dark-90);
   transform: translate(0, 0);
   transition: all 0.2s ease;
   position: relative;
@@ -169,23 +169,19 @@ body {
   min-height: 240px;
 }
 .ks-hover-card:hover {
-  background-color: var(--dark);
+  background-color: var(--dark-90);
   transform: translate(-8px, -8px);
   color: var(--white);
 }
-.ks-hover-card:hover .ks-hover-card-text { color: var(--white) !important; opacity: 0.8 !important; }
-.ks-hover-card:hover .ks-hover-card-heading { color: var(--white); }
-.ks-hover-card:hover .ks-hover-card-btn { color: var(--white); border-color: var(--yellow); }
-.ks-hover-card:hover .ks-hover-card-icon { color: var(--yellow); }
 .ks-hover-card-shadow {
   position: absolute;
   width: 100%; height: 100%;
   top: 0; left: 0;
   z-index: 0;
-  background-color: var(--yellow);
+  background-color: var(--white);
   opacity: 0; visibility: hidden;
   transition: opacity 0.3s ease;
-  border: 2px solid var(--dark);
+  border: 2px solid var(--white);
 }
 .ks-hover-card-shadow::before {
   display: none;
@@ -193,8 +189,7 @@ body {
 .ks-hover-card-shadow::after {
   display: none;
 }
-.ks-hover-card-wrapper:hover .ks-hover-card-shadow { opacity: 1; visibility: visible; transform: translate(4px, 4px); box-shadow: 4px 4px 0px 0px var(--dark); }
-.ks-hover-card-heading { color: var(--dark); }
+.ks-hover-card-wrapper:hover .ks-hover-card-shadow { opacity: 1; visibility: visible; transform: translate(4px, 4px); box-shadow: 4px 4px 0px 0px var(--white); }
 
 /* Interactive hero grid cells */
 .ks-grid-cell {
@@ -225,18 +220,7 @@ body {
 .ks-hover-card:hover span,
 .ks-hover-card:hover div,
 .ks-hover-card:hover .font-bold {
-  color: var(--white) !important;
   border-color: rgba(255,255,255,0.2) !important;
-}
-
-.ks-hover-card:hover .ks-callout-text {
-  color: var(--yellow) !important;
-  opacity: 1 !important;
-}
-
-.ks-hover-card:hover .ks-hover-card-icon {
-  color: var(--yellow) !important;
-  background-color: rgba(255,255,255,0.1) !important;
 }
 
 @media (max-width: 768px) {
