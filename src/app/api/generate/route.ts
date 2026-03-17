@@ -67,8 +67,9 @@ export async function POST(req: Request) {
         2. OUTPUT HARUS 100% valid JSON.
         3. DILARANG memasukkan referensi (seperti) di dalam teks/string. Gunakan key 'page_number' yang disediakan.
         4. Untuk referensi halaman, gunakan angka dari penanda halaman dokumen (misal dari '--- PAGE 14 ---' ambil angka 14), BUKAN nomor urut 'source'.
-        5. Ekstrak hanya 20% konsep paling krusial yang kemungkinan besar keluar di ujian.
+        5. Ekstrak hanya konsep paling krusial yang kemungkinan besar keluar di ujian.
         6. Gunakan bahasa Indonesia yang baku dan mudah dipahami mahasiswa.
+        7. Minimal 10 flashcard, 15 quiz, dan mindmap yang sangat komprehensif.
 
       System Instructions:
       Analisis teks materi kuliah yang diberikan oleh user. Buat satu objek JSON utama yang memiliki 3 kunci (keys) array: 'flashcards', 'quiz', dan 'mindmap'. Ikuti skema output dengan presisi absolut.
