@@ -76,48 +76,43 @@ export default function StudyPage({ params }: Props) {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-10">
-      <div className="mx-auto max-w-4xl">
+    <div className="min-h-screen bg-dark ks-grid-bg relative px-4 py-10">
+      <div className="mx-auto max-w-4xl relative z-10">
         {/* Header */}
-        <div className="mb-6 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mb-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <Link href="/dashboard" className="text-sm text-gray-400 hover:text-gray-600">
-              ← Kembali ke Dashboard
+            <Link href="/dashboard" className="text-sm font-bold text-white/60 hover:text-white flex items-center gap-2 mb-2 transition-colors">
+              <span className="text-lg leading-none">←</span> Kembali ke Dashboard
             </Link>
             <div className="mt-2 flex flex-col sm:flex-row sm:items-center gap-3">
-              <h1 className="text-xl font-bold text-gray-900">{doc.title}</h1>
+              <h1 className="text-3xl font-black text-white tracking-tight">{doc.title}</h1>
               {doc.file_url && (
                 <a
                   href={doc.file_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-600 hover:bg-blue-100 transition-colors flex items-center gap-1 w-fit"
+                  className="rounded-xl border-[2px] border-dark bg-yellow px-4 py-1.5 text-xs font-black text-dark hover:bg-yellow/80 shadow-[2px_2px_0px_#ffffff] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all flex items-center gap-2 w-fit uppercase tracking-widest"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="9" y1="15" x2="15" y2="15"></line>
-                  </svg>
                   Lihat PDF
                 </a>
               )}
             </div>
           </div>
-          <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
+          <span className="rounded-xl border-[2px] border-white/30 bg-green px-4 py-2 text-xs font-black uppercase tracking-widest text-white shadow-[2px_2px_0px_#ffffff] rotate-2">
             Dihasilkan oleh AI
           </span>
         </div>
 
         {/* Tab Navigation */}
-        <div className="mb-6 flex gap-1 overflow-x-auto rounded-xl border border-gray-200 bg-white p-1 w-fit max-w-full">
+        <div className="mb-10 flex gap-2 overflow-x-auto w-fit max-w-full pb-2">
           {tabs.map((t) => (
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
-              className={`shrink-0 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+              className={`shrink-0 rounded-xl border-[3px] px-6 py-3 text-sm font-black uppercase tracking-widest transition-all ${
                 tab === t.key
-                  ? "bg-gray-900 text-white"
-                  : "text-gray-500 hover:text-gray-800"
+                  ? "border-white/30 bg-purple text-white shadow-[4px_4px_0px_#ffffff] -translate-y-1"
+                  : "border-white/20 bg-dark-90 text-white hover:bg-white/10 shadow-[2px_2px_0px_#ffffff] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
               }`}
             >
               {t.label}
@@ -141,12 +136,12 @@ export default function StudyPage({ params }: Props) {
           {((tab === "flashcard" && (!doc.flashcards || doc.flashcards.length === 0)) ||
            (tab === "quiz" && (!doc.quiz || doc.quiz.length === 0)) ||
            (tab === "mindmap" && (!doc.mindmap || doc.mindmap.length === 0))) && (
-            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-white py-16 text-center shadow-sm">
-              <span className="text-4xl mb-3 opacity-20">🤖</span>
-              <p className="font-medium text-gray-800">
+            <div className="flex flex-col items-center justify-center rounded-2xl border-[3px] border-dashed border-white/30 bg-dark-90 py-20 px-6 text-center shadow-[8px_8px_0px_#ffffff]">
+              <span className="text-6xl mb-6">🤖</span>
+              <p className="text-xl font-black text-white uppercase tracking-tight mb-2">
                 Data {tab} tidak ditemukan.
               </p>
-              <p className="mt-1 text-sm text-gray-500 max-w-sm mx-auto">
+              <p className="font-bold text-gray max-w-md mx-auto">
                 AI belum selesai memproses bagian ini, atau struktur dokumen awal kurang mendukung pembuatan materi ini.
               </p>
             </div>

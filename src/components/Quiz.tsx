@@ -76,24 +76,24 @@ export default function Quiz({ questions }: Props) {
     const pct = Math.round((score / questions.length) * 100);
     return (
       <div className="mx-auto max-w-lg">
-        <div className="rounded-xl border border-gray-200 bg-white p-8 text-center">
-          <p className="text-5xl font-bold text-gray-800">{score}/{questions.length}</p>
-          <p className="mt-1 text-gray-500">Skor kamu: <span className="font-semibold text-blue-600">{pct}%</span></p>
-          <p className="mt-2 text-2xl">
+        <div className="rounded-2xl border-[3px] border-white/30 bg-dark-90 p-8 text-center shadow-[6px_6px_0px_#ffffff]">
+          <p className="text-6xl font-black text-white">{score}/{questions.length}</p>
+          <p className="mt-2 text-gray font-bold">Skor kamu: <span className="text-purple bg-purple/10 px-2 py-0.5 rounded-md">{pct}%</span></p>
+          <p className="mt-3 text-2xl font-bold text-white">
             {pct >= 80 ? "🎉 Luar biasa!" : pct >= 60 ? "👍 Lumayan!" : "📚 Perlu belajar lagi"}
           </p>
 
           {/* Answer Review */}
-          <div className="mt-6 space-y-3 text-left">
+          <div className="mt-8 space-y-4 text-left">
             {answers.map((a, i) => (
-              <div key={i} className={`rounded-lg border p-3 text-sm ${a.ok ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}`}>
-                <p className="font-medium text-gray-700">{i + 1}. {a.question}</p>
+              <div key={i} className={`rounded-xl border-[3px] p-4 text-sm shadow-[2px_2px_0px_#ffffff] ${a.ok ? "border-green bg-green/10" : "border-red-500 bg-red-500/10"}`}>
+                <p className="font-bold text-white mb-2">{i + 1}. {a.question}</p>
                 {!a.ok && (
-                  <p className="mt-1 text-red-600">
-                    Jawaban kamu: <span className="font-medium">{a.chosen ?? "⏰ Waktu habis"}</span>
+                  <p className="mt-1 text-red-400 font-semibold bg-dark-90 p-2 rounded-lg border-2 border-red-500/30">
+                    Satu yang dipilih: <span className="font-bold">{a.chosen ?? "⏰ Waktu habis"}</span>
                   </p>
                 )}
-                <p className={a.ok ? "mt-1 text-green-700" : "text-gray-600"}>
+                <p className={`mt-2 font-bold p-2 text-sm rounded-lg border-2 bg-dark-90 ${a.ok ? "text-green border-green/30" : "text-green border-green/30"}`}>
                   ✓ {a.correct}
                 </p>
               </div>
@@ -102,7 +102,7 @@ export default function Quiz({ questions }: Props) {
 
           <button
             onClick={restart}
-            className="mt-6 rounded-lg bg-gray-900 px-6 py-2.5 text-sm font-medium text-white hover:bg-gray-700"
+            className="mt-8 w-full rounded-xl bg-yellow border-[3px] border-dark px-6 py-3.5 text-base font-black text-dark uppercase tracking-widest shadow-[4px_4px_0px_#ffffff] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
           >
             Coba Lagi
           </button>
@@ -114,46 +114,46 @@ export default function Quiz({ questions }: Props) {
   return (
     <div className="mx-auto max-w-lg">
       {/* Header */}
-      <div className="mb-4 flex items-center justify-between text-sm text-gray-500">
-        <span>Soal {current + 1} / {questions.length}</span>
-        <span className={`font-mono text-xl font-bold ${timerColor}`}>{timer}s</span>
+      <div className="mb-4 flex items-center justify-between text-sm font-bold text-white">
+        <span className="bg-dark-90 border-[2px] border-white/30 px-3 py-1 rounded-lg">Soal {current + 1} / {questions.length}</span>
+        <span className={`font-mono text-xl ${timerColor} bg-dark-90 border-[2px] border-white/30 px-3 py-1 rounded-lg`}>{timer}s</span>
       </div>
 
       {/* Progress Bar */}
-      <div className="mb-6 h-1.5 w-full rounded-full bg-gray-100">
+      <div className="mb-8 h-3 w-full rounded-full bg-dark/50 border-[2px] border-white/30 overflow-hidden">
         <div
-          className="h-full rounded-full bg-blue-500 transition-all"
+          className="h-full rounded-r-full bg-yellow border-r-[2px] border-white/50 transition-all duration-500"
           style={{ width: `${((current) / questions.length) * 100}%` }}
         />
       </div>
 
       {/* Question */}
-      <div className="rounded-xl border border-gray-200 bg-white p-6">
-        <div className="flex items-center justify-between mb-2">
-          <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">{question.source_topic}</p>
+      <div className="rounded-2xl border-[3px] border-white/30 bg-dark-90 p-6 shadow-[6px_6px_0px_#ffffff]">
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-xs font-black uppercase tracking-widest text-white/50">{question.source_topic}</p>
           {question.page_number && (
-            <p className="text-[10px] font-semibold tracking-wider text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
-              Halaman {question.page_number}
+            <p className="text-[10px] font-black tracking-widest text-dark bg-yellow px-2 py-0.5 rounded-md border border-dark">
+              Hal {question.page_number}
             </p>
           )}
         </div>
-        <p className="text-base font-semibold text-gray-800 leading-relaxed">{question.question}</p>
+        <p className="text-lg font-black text-white leading-snug">{question.question}</p>
 
         {/* Options */}
-        <div className="mt-5 space-y-2.5">
+        <div className="mt-6 space-y-3">
           {question.options.map((opt) => {
-            let style = "border-gray-200 bg-white text-gray-700 hover:border-gray-400 hover:bg-gray-50";
+            let style = "border-[3px] border-white/20 bg-dark/50 text-white hover:bg-white/10 shadow-[2px_2px_0px_#ffffff] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none";
             if (answered) {
-              if (opt === question.correct_answer) style = "border-green-500 bg-green-50 text-green-800 font-semibold";
-              else if (opt === selected) style = "border-red-400 bg-red-50 text-red-700";
-              else style = "border-gray-100 bg-gray-50 text-gray-400";
+              if (opt === question.correct_answer) style = "border-[3px] border-green bg-green text-white shadow-none translate-x-0.5 translate-y-0.5";
+              else if (opt === selected) style = "border-[3px] border-red-500 bg-red-500 text-white shadow-none translate-x-0.5 translate-y-0.5";
+              else style = "border-[3px] border-white/10 bg-dark-90 text-white/30 shadow-none";
             }
             return (
               <button
                 key={opt}
                 onClick={() => submitAnswer(opt)}
                 disabled={answered}
-                className={`w-full rounded-lg border px-4 py-3 text-left text-sm transition-all ${style} disabled:cursor-default`}
+                className={`w-full rounded-xl px-5 py-3.5 text-left text-sm font-bold transition-all ${style} disabled:cursor-default`}
               >
                 {opt}
               </button>
@@ -163,19 +163,22 @@ export default function Quiz({ questions }: Props) {
 
         {/* Explanation */}
         {answered && (
-          <div className="mt-4 rounded-lg bg-blue-50 border border-blue-100 p-3">
-            <p className="text-xs font-semibold text-blue-600 mb-1">💡 Penjelasan</p>
-            <p className="text-sm text-blue-800">{question.explanation}</p>
+          <div className="mt-6 rounded-xl bg-light-blue/10 border-[3px] border-light-blue/20 p-4 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-16 h-16 bg-white/5 rounded-bl-full -mr-4 -mt-4"></div>
+            <p className="text-xs font-black text-light-blue uppercase tracking-widest mb-2 flex items-center gap-2">
+              <span className="text-lg">💡</span> Penjelasan
+            </p>
+            <p className="text-sm font-semibold text-white leading-relaxed">{question.explanation}</p>
           </div>
         )}
       </div>
 
       {/* Next Button */}
       {answered && (
-        <div className="mt-4 flex justify-end">
+        <div className="mt-6 flex justify-end">
           <button
             onClick={next}
-            className="rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-700"
+            className="rounded-xl border-[3px] border-white/30 bg-purple px-6 py-3.5 text-sm font-black text-white hover:bg-[#5c47d6] uppercase tracking-widest shadow-[4px_4px_0px_#ffffff] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
           >
             {current + 1 >= questions.length ? "Lihat Hasil →" : "Soal Berikutnya →"}
           </button>

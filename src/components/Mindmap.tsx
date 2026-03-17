@@ -98,18 +98,18 @@ export default function Mindmap({ nodes }: Props) {
 
       mermaid.initialize({
         startOnLoad: false,
-        theme: "default",
+        theme: "dark",
         mindmap: {
           padding: 20,
         },
         themeVariables: {
           // Mindmap uses these for branch coloring
-          primaryColor: "#3b30d4",
-          primaryTextColor: "#fff",
-          primaryBorderColor: "#3b30d4",
-          lineColor: "#aaa",
-          nodeBorder: "#ccc",
-          clusterBkg: "#f9f9f9",
+          primaryColor: "#4e39c5",
+          primaryTextColor: "#ffffff",
+          primaryBorderColor: "#4e39c5",
+          lineColor: "#d7dfe9",
+          nodeBorder: "#ffffff",
+          clusterBkg: "transparent",
         },
       });
 
@@ -133,11 +133,17 @@ export default function Mindmap({ nodes }: Props) {
   }, [syntax]);
 
   return (
-    <div className="w-full rounded-xl border border-gray-200 bg-white overflow-hidden">
+    <div className="w-full rounded-2xl border-[3px] border-white/30 bg-dark-90 overflow-hidden shadow-[6px_6px_0px_#ffffff] relative">
+      <div className="absolute top-0 left-0 w-full h-10 bg-dark/80 flex items-center px-4 gap-2 border-b-[3px] border-white/30 z-10 backdrop-blur-sm">
+        <div className="w-3 h-3 rounded-full bg-red-400 border-2 border-white/30"></div>
+        <div className="w-3 h-3 rounded-full bg-yellow border-2 border-white/30"></div>
+        <div className="w-3 h-3 rounded-full bg-green border-2 border-white/30"></div>
+        <span className="ml-2 text-xs font-black uppercase tracking-widest text-white/80">Mind-Map Viewer</span>
+      </div>
       <div
         ref={containerRef}
-        style={{ minHeight: "520px" }}
-        className="w-full flex items-center justify-center p-4 text-sm text-gray-400"
+        style={{ minHeight: "560px" }}
+        className="w-full flex items-center justify-center p-6 font-bold text-white/40 pt-16 bg-dark ks-grid-bg"
       >
         Memuat mind-map...
       </div>

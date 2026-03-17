@@ -29,57 +29,63 @@ export default function Flashcard({ flashcards }: Props) {
   return (
     <div>
       {/* Progress */}
-      <div className="mb-6 flex items-center justify-between text-sm text-gray-500">
-        <span>{flashcards.length} kartu</span>
-        <span className="font-medium text-green-600">{knownCount} / {flashcards.length} sudah paham ✓</span>
+      <div className="mb-8 flex items-center justify-between font-bold text-white">
+        <span className="bg-dark-90 border-[3px] border-white/30 px-4 py-2 rounded-xl shadow-[4px_4px_0px_#ffffff]">{flashcards.length} KARTU</span>
+        <span className="bg-yellow border-[3px] border-dark text-dark px-4 py-2 rounded-xl shadow-[4px_4px_0px_#ffffff]">{knownCount} / {flashcards.length} SUDAH PAHAM ✓</span>
       </div>
 
       {/* Cards Grid */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {flashcards.map((card, i) => (
           <div
             key={i}
-            className="relative cursor-pointer"
-            style={{ perspective: "1000px", height: "180px" }}
+            className="relative cursor-pointer group"
+            style={{ perspective: "1000px", height: "240px" }}
             onClick={() => toggle(i)}
           >
             <motion.div
               style={{ transformStyle: "preserve-3d" }}
               animate={{ rotateY: flipped[i] ? 180 : 0 }}
-              transition={{ duration: 0.45, ease: "easeInOut" }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
               className="relative h-full w-full"
             >
               {/* Front */}
               <div
-                className={`absolute inset-0 flex flex-col items-center justify-center rounded-xl border-2 bg-white p-4 text-center ${
-                  known.has(i) ? "border-green-400" : "border-gray-200"
+                className={`absolute inset-0 flex flex-col items-center justify-center rounded-2xl border-[3px] p-6 text-center transition-all ${
+                  known.has(i)
+                    ? "border-green bg-green/10 shadow-[4px_4px_0px_var(--green)]"
+                    : "border-white/30 bg-dark-90 shadow-[6px_6px_0px_#ffffff]"
                 }`}
                 style={{ backfaceVisibility: "hidden" }}
               >
-                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Istilah</p>
-                <p className="text-lg font-bold text-gray-800">{card.term}</p>
-                <p className="mt-3 text-xs text-gray-400">klik untuk lihat definisi</p>
+                <p className="text-xs font-black uppercase tracking-widest text-gray mb-3">Istilah</p>
+                <p className="text-xl font-black text-white leading-snug">{card.term}</p>
+                <p className="mt-auto text-[10px] font-bold text-white/50 uppercase tracking-widest bg-white/10 px-3 py-1.5 rounded-lg">klik untuk lihat definisi</p>
               </div>
 
               {/* Back */}
               <div
-                className={`absolute inset-0 flex flex-col items-center justify-center rounded-xl border-2 bg-gray-50 p-4 text-center ${
-                  known.has(i) ? "border-green-400" : "border-gray-200"
+                className={`absolute inset-0 flex flex-col items-center justify-center rounded-2xl border-[3px] p-6 text-center ${
+                  known.has(i)
+                    ? "border-green bg-green/5 shadow-[4px_4px_0px_var(--green)] text-white"
+                    : "border-white/30 bg-[#202230] shadow-[6px_6px_0px_#ffffff] text-white"
                 }`}
                 style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
               >
-                <p className="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">Definisi</p>
-                <p className="text-sm text-gray-700 leading-relaxed">{card.definition}</p>
+                <p className="text-xs font-black uppercase tracking-widest text-white/50 mb-3">Definisi</p>
+                <div className="flex-1 overflow-y-auto w-full flex items-center justify-center">
+                  <p className="text-sm font-semibold text-white leading-relaxed">{card.definition}</p>
+                </div>
               </div>
             </motion.div>
 
             {/* Known Button */}
             <button
               onClick={(e) => toggleKnown(e, i)}
-              className={`absolute bottom-2 right-2 z-10 rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${
+              className={`absolute bottom-4 right-4 z-10 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-wider border-[3px] transition-all hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none ${
                 known.has(i)
-                  ? "bg-green-100 text-green-700"
-                  : "bg-gray-100 text-gray-500 hover:bg-green-50 hover:text-green-600"
+                  ? "bg-green border-green text-white shadow-[2px_2px_0px_var(--green)] hover:shadow-none translate-y-0.5 translate-x-0.5"
+                  : "bg-dark-90 border-white/30 text-white hover:bg-white/20 shadow-[2px_2px_0px_#ffffff]"
               }`}
             >
               {known.has(i) ? "✓ Paham" : "Tandai"}
@@ -90,10 +96,10 @@ export default function Flashcard({ flashcards }: Props) {
 
       {/* Reset */}
       {knownCount > 0 && (
-        <div className="mt-6 text-center">
+        <div className="mt-10 text-center">
           <button
             onClick={() => { setKnown(new Set()); setFlipped({}); }}
-            className="text-sm text-gray-400 underline hover:text-gray-600"
+            className="font-bold text-gray/50 hover:text-white underline decoration-2 underline-offset-4 transition-colors"
           >
             Reset semua kartu
           </button>

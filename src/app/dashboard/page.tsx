@@ -28,13 +28,13 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="flex h-screen bg-[#f8f9fa] overflow-hidden ks-grid-bg relative">
+    <div className="flex h-screen bg-dark overflow-hidden ks-grid-bg relative">
       <Sidebar />
 
       <main className="flex-1 ml-64 flex flex-col h-screen relative bg-transparent">
         <Header
           title="Dokumen Saya"
-          subtitle="Pilih dokumen yang diproses AI untuk mulai belajar (Flashcard, Quiz, atau Map)."
+          subtitle="Pilih dokumen yang diproses AI untuk mulai belajar."
         />
 
         <div className="flex-1 overflow-y-auto p-8 relative z-0">

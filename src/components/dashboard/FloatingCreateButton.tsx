@@ -34,7 +34,7 @@ export default function FloatingCreateButton() {
       onClick={() => router.push("/create")}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="fixed bottom-8 right-8 z-30 flex items-center gap-3 bg-yellow text-dark py-4 px-6 rounded-full font-bold uppercase tracking-wider border-2 border-dark shadow-[4px_4px_0px_0px_var(--dark)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_var(--dark)] transition-all shrink-0"
+      className="fixed bottom-8 right-8 z-30 flex items-center gap-3 bg-yellow text-dark py-4 px-6 rounded-full font-bold uppercase tracking-wider border-[3px] border-dark hover:border-white shadow-[4px_4px_0px_0px_#ffffff] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#ffffff] transition-all shrink-0"
       title="Buat Materi Baru"
     >
       <Plus className="w-5 h-5 shrink-0" strokeWidth={3} />
