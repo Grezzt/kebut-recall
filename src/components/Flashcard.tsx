@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight, Lightbulb, RefreshCcw, LayoutTemplate } from "lucide-react";
 import type { Flashcard as FlashcardType } from "@/types";
 
 interface Props {
@@ -10,229 +11,207 @@ interface Props {
   onUpdate?: (newFlashcards: FlashcardType[]) => void;
 }
 
-export default function Flashcard({ flashcards: initialFlashcards, documentId, onUpdate }: Props) {
+export default function Flashcard({ flashcards: initialFlashcards, documentId }: Props) {
   const [flashcards, setFlashcards] = useState(initialFlashcards);
-  const [flipped, setFlipped] = useState<Record<number, boolean>>({});
-  const [known, setKnown] = useState<Set<number>>(new Set());
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [editTerm, setEditTerm] = useState("");
-  const [editDef, setEditDef] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [flipped, setFlipped] = useState(false);
+  const [direction, setDirection] = useState(0); // 1 = next, -1 = prev
+  const [isTermFirst, setIsTermFirst] = useState(true);
 
-  // Update internal state if props change
+  // Sync internal state if props change
   useEffect(() => {
     setFlashcards(initialFlashcards);
+    setCurrentIndex(0);
+    setFlipped(false);
   }, [initialFlashcards]);
 
-  // Load known set from localStorage
+  // Keyboard navigation
   useEffect(() => {
-    if (documentId) {
-      const stored = localStorage.getItem(`flashcards_known_${documentId}`);
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed)) {
-            setKnown(new Set(parsed));
-          }
-        } catch (e) {}
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Avoid triggering when user is interacting with inputs (if any)
+      if (document.activeElement?.tagName === "INPUT" || document.activeElement?.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowRight") {
+        handleNext();
+      } else if (e.key === "ArrowLeft") {
+        handlePrev();
+      } else if (e.key === " " || e.key === "ArrowUp" || e.key === "ArrowDown") {
+        e.preventDefault(); // prevent page scroll
+        setFlipped(prev => !prev);
       }
-    }
-  }, [documentId]);
+    };
 
-  // Save known set to localStorage
-  useEffect(() => {
-    if (documentId) {
-      localStorage.setItem(`flashcards_known_${documentId}`, JSON.stringify(Array.from(known)));
-    }
-  }, [known, documentId]);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [currentIndex, flashcards.length]);
 
-  const toggle = (i: number) => {
-    if (editingId !== null) return; // Prevent flip while editing
-    setFlipped((prev) => ({ ...prev, [i]: !prev[i] }));
+  const handleNext = () => {
+    setDirection(1);
+    setFlipped(false);
+    setCurrentIndex((prev) => (prev + 1) % flashcards.length);
   };
 
-  const toggleKnown = (e: React.MouseEvent, i: number) => {
-    e.stopPropagation();
-    setKnown((prev) => {
-      const next = new Set(prev);
-      next.has(i) ? next.delete(i) : next.add(i);
-      return next;
-    });
+  const handlePrev = () => {
+    setDirection(-1);
+    setFlipped(false);
+    setCurrentIndex((prev) => (prev === 0 ? flashcards.length - 1 : prev - 1));
   };
 
-  const startEdit = (e: React.MouseEvent, i: number, card: FlashcardType) => {
-    e.stopPropagation();
-    setEditingId(i);
-    setEditTerm(card.term);
-    setEditDef(card.definition);
-  };
-
-  const saveEdit = (e: React.MouseEvent, i: number) => {
-    e.stopPropagation();
-    const newCards = [...flashcards];
-    newCards[i] = { term: editTerm, definition: editDef };
-    setFlashcards(newCards);
-    setEditingId(null);
-    if (onUpdate) {
-      onUpdate(newCards);
-    }
-  };
-
-  const cancelEdit = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setEditingId(null);
-  };
-
-  const knownCount = known.size;
+  if (!flashcards || flashcards.length === 0) return null;
 
   return (
-    <div>
-      {/* Progress */}
-      <div className="mb-8 flex flex-col sm:flex-row items-center justify-between font-bold text-white gap-4">
-        <span className="bg-dark-90 border-[3px] border-white/30 px-4 py-2 rounded-xl shadow-[4px_4px_0px_#ffffff]">
-          {flashcards.length} KARTU
-        </span>
-        <span className="bg-yellow border-[3px] border-dark text-dark px-4 py-2 rounded-xl shadow-[4px_4px_0px_#ffffff]">
-          {knownCount} / {flashcards.length} SUDAH PAHAM ✓
-        </span>
-      </div>
+    <div className="w-full flex justify-center py-4 text-[#E2E4E9]">
+      <div className="w-full max-w-[1000px] flex flex-col min-h-[600px] bg-[#0A092D] rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden font-sans border-2 border-white/5">
 
-      {/* Cards Grid */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {flashcards.map((card, i) => (
-          <div
-            key={i}
-            className="relative cursor-pointer group"
-            style={{ perspective: "1000px", height: "240px" }}
-            onClick={() => toggle(i)}
-          >
-            <motion.div
-              style={{ transformStyle: "preserve-3d" }}
-              animate={{ rotateY: flipped[i] ? 180 : 0 }}
-              transition={{ duration: 0.5, ease: "easeInOut" }}
-              className="relative h-full w-full"
-            >
-              {/* Front */}
-              <div
-                className={`absolute inset-0 flex flex-col items-center justify-center rounded-2xl border-[3px] p-6 text-center transition-all overflow-hidden ${
-                  known.has(i)
-                    ? "border-green bg-green/10 shadow-[4px_4px_0px_var(--green)]"
-                    : "border-white/30 bg-dark-90 shadow-[6px_6px_0px_#ffffff]"
-                }`}
-                style={{ backfaceVisibility: "hidden" }}
-              >
-                {editingId === i && !flipped[i] ? (
-                  <div className="flex flex-col w-full h-full justify-between gap-2" onClick={(e) => e.stopPropagation()}>
-                    <input
-                      type="text"
-                      className="w-full bg-dark/50 border border-white/30 rounded px-2 py-1 text-white font-bold focus:outline-none"
-                      value={editTerm}
-                      onChange={(e) => setEditTerm(e.target.value)}
-                      placeholder="Istilah..."
-                    />
-                    <textarea
-                      className="w-full h-full bg-dark/50 border border-white/30 rounded px-2 py-1 text-white text-sm focus:outline-none resize-none"
-                      value={editDef}
-                      onChange={(e) => setEditDef(e.target.value)}
-                      placeholder="Definisi..."
-                    />
-                    <div className="flex gap-2 justify-center">
-                      <button onClick={(e) => saveEdit(e, i)} className="bg-green text-white text-xs px-3 py-1.5 rounded-lg border border-green shadow-[2px_2px_0px_var(--green)] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all font-black uppercase tracking-wider">Simpan</button>
-                      <button onClick={cancelEdit} className="bg-red-500 text-white text-xs px-3 py-1.5 rounded-lg border border-red-500 shadow-[2px_2px_0px_#ef4444] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all font-black uppercase tracking-wider">Batal</button>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <p className="text-xs font-black uppercase tracking-widest text-gray mb-3">Istilah</p>
-                    <p className="text-xl font-black text-white leading-snug">{card.term}</p>
-                    <p className="mt-auto text-[10px] font-bold text-white/50 uppercase tracking-widest bg-white/10 px-3 py-1.5 rounded-lg">
-                      klik untuk lihat definisi
-                    </p>
-                  </>
-                )}
-              </div>
+        {/* Top Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-center px-6 py-6 border-b border-white/5 gap-4">
+            <div className="flex items-center gap-2 font-bold text-lg text-white">
+                <div className="bg-blue-600/20 p-1.5 rounded-lg border border-blue-500/30">
+                   <LayoutTemplate className="text-blue-400" size={20} />
+                </div>
+                <span className="cursor-pointer hover:text-blue-400 transition-colors flex items-center gap-2">
+                   Flashcard
+                   {/* <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg> */}
+                </span>
+            </div>
 
-              {/* Back */}
-              <div
-                className={`absolute inset-0 flex flex-col items-center justify-center rounded-2xl border-[3px] p-6 text-center overflow-hidden ${
-                  known.has(i)
-                    ? "border-green bg-green/5 shadow-[4px_4px_0px_var(--green)] text-white"
-                    : "border-white/30 bg-[#202230] shadow-[6px_6px_0px_#ffffff] text-white"
-                }`}
-                style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
-              >
-                {editingId === i && flipped[i] ? (
-                  <div className="flex flex-col w-full h-full justify-between gap-2" onClick={(e) => e.stopPropagation()}>
-                    <input
-                      type="text"
-                      className="w-full bg-dark/50 border border-white/30 rounded px-2 py-1 text-white font-bold focus:outline-none"
-                      value={editTerm}
-                      onChange={(e) => setEditTerm(e.target.value)}
-                      placeholder="Istilah..."
-                    />
-                    <textarea
-                      className="w-full h-full bg-dark/50 border border-white/30 rounded px-2 py-1 text-white text-sm focus:outline-none resize-none"
-                      value={editDef}
-                      onChange={(e) => setEditDef(e.target.value)}
-                      placeholder="Definisi..."
-                    />
-                    <div className="flex gap-2 justify-center">
-                      <button onClick={(e) => saveEdit(e, i)} className="bg-green text-white text-xs px-3 py-1.5 rounded-lg border border-green shadow-[2px_2px_0px_var(--green)] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all font-black uppercase tracking-wider">Simpan</button>
-                      <button onClick={cancelEdit} className="bg-red-500 text-white text-xs px-3 py-1.5 rounded-lg border border-red-500 shadow-[2px_2px_0px_#ef4444] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all font-black uppercase tracking-wider">Batal</button>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <p className="text-xs font-black uppercase tracking-widest text-white/50 mb-3">Definisi</p>
-                    <div className="flex-1 overflow-y-auto w-full flex items-center justify-center">
-                      <p className="text-sm font-semibold text-white leading-relaxed">{card.definition}</p>
-                    </div>
-                  </>
-                )}
-              </div>
-            </motion.div>
+            <div className="flex flex-col items-center">
+                <div className="font-bold tracking-widest text-sm text-white/50">
+                    <span className="text-white">{currentIndex + 1}</span> / {flashcards.length}
+                </div>
+            </div>
 
-            {/* Actions */}
-            {editingId !== i && (
-              <>
+            {/* <div className="flex items-center gap-4">
                 <button
-                  onClick={(e) => startEdit(e, i, card)}
-                  className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-lg text-xs font-black uppercase tracking-wider border-[2px] transition-all bg-dark-90 border-white/30 text-white hover:bg-white/20 shadow-[2px_2px_0px_#ffffff] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none"
+                  onClick={() => setIsTermFirst(!isTermFirst)}
+                  className="hidden sm:flex items-center gap-2 border border-white/20 px-4 py-2 rounded-full text-xs font-bold hover:bg-white/10 transition-colors text-white/80"
                 >
-                  ✎
+                    <RefreshCcw size={14}/> {isTermFirst ? "Ubah istilah ini menjadi pertanyaan" : "Ubah pertanyaan menjadi istilah"}
                 </button>
-                <button
-                  onClick={(e) => toggleKnown(e, i)}
-                  className={`absolute bottom-4 right-4 z-10 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-wider border-[3px] transition-all hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none ${
-                    known.has(i)
-                      ? "bg-green border-green text-white shadow-[2px_2px_0px_var(--green)] hover:shadow-none translate-y-0.5 translate-x-0.5"
-                      : "bg-dark-90 border-white/30 text-white hover:bg-white/20 shadow-[2px_2px_0px_#ffffff]"
-                  }`}
-                >
-                  {known.has(i) ? "✓ Paham" : "Tandai"}
-                </button>
-              </>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* Reset */}
-      {knownCount > 0 && (
-        <div className="mt-10 text-center">
-          <button
-            onClick={() => {
-              setKnown(new Set());
-              setFlipped({});
-              if (documentId) {
-                localStorage.removeItem(`flashcards_known_${documentId}`);
-              }
-            }}
-            className="font-bold text-gray/50 hover:text-white underline decoration-2 underline-offset-4 transition-colors"
-          >
-            Reset semua kartu
-          </button>
+            </div> */}
         </div>
-      )}
+
+        {/* Stepper Progress Bar */}
+        <div className="w-full h-1.5 bg-white/5 relative">
+            <div
+                className="h-full bg-blue-500 transition-all duration-300 ease-out"
+                style={{ width: `${((currentIndex + 1) / flashcards.length) * 100}%` }}
+            />
+        </div>
+
+        {/* Stacked Cards Layout */}
+        <div className="flex-1 w-full flex items-center justify-center relative px-4 py-10 overflow-hidden">
+            <div className="relative w-full max-w-[800px] h-[380px] sm:h-[420px]" style={{ perspective: "1500px" }}>
+                 <AnimatePresence mode="popLayout" custom={direction}>
+                     {flashcards.map((card, index) => {
+                         // To create the "stack", we render the current card and the 2 cards behind it.
+                         const isVisible = index >= currentIndex && index < currentIndex + 3;
+                         if (!isVisible) return null;
+
+                         const offset = index - currentIndex;
+                         const isTop = offset === 0;
+
+                         return (
+                             <motion.div
+                                 key={index}
+                                 custom={direction}
+                                 variants={{
+                                     enter: (dir: number) => ({
+                                         x: dir > 0 ? 500 : -500, // slide in from right or left depending on direction
+                                         y: 50,
+                                         opacity: 0,
+                                         scale: 0.8,
+                                         zIndex: 10,
+                                     }),
+                                     center: {
+                                         x: 0,
+                                         y: offset * 18,        // consecutive cards pushed down
+                                         scale: 1 - offset * 0.04, // shrunk to simulate depth
+                                         opacity: 1 - offset * 0.3,
+                                         zIndex: 10 - offset,   // behind the current card
+                                     },
+                                     exit: (dir: number) => ({
+                                         x: dir > 0 ? -500 : 500, // slide out opposite to incoming
+                                         y: 50,
+                                         opacity: 0,
+                                         scale: 0.8,
+                                         zIndex: 0,
+                                     })
+                                 }}
+                                 initial="enter"
+                                 animate="center"
+                                 exit="exit"
+                                 transition={{ duration: 0.4, type: "spring", bounce: 0.15 }}
+                                 className={`absolute inset-0 w-full h-full ${isTop ? 'cursor-pointer' : ''}`}
+                                 onClick={() => isTop && setFlipped(!flipped)}
+                                 style={{ transformStyle: "preserve-3d" }}
+                             >
+                                 <motion.div
+                                    animate={{ rotateX: isTop && flipped ? 180 : 0 }}
+                                    transition={{ duration: 0.6, type: "spring", bounce: 0.25 }}
+                                    style={{ transformStyle: "preserve-3d", transformOrigin: "center center" }}
+                                    className="relative w-full h-full"
+                                 >
+                                      {/* Front Face */}
+                                      <div
+                                          className="absolute inset-0 w-full h-full bg-[#202230] rounded-2xl p-6 sm:p-10 flex flex-col text-white shadow-[0_10px_40px_rgba(0,0,0,0.5)] border-2 border-white/5"
+                                          style={{ backfaceVisibility: "hidden" }}
+                                      >
+                                          <div className="flex justify-between items-start w-full">
+                                              <button className="flex items-center gap-2 text-white/40 hover:text-white transition-colors text-xs font-bold">
+                                                  <Lightbulb size={16}/> Tampilkan Pemahaman
+                                              </button>
+                                          </div>
+                                          <div className="flex-1 flex items-center justify-center text-center px-4 mt-6">
+                                              <p className="text-2xl sm:text-[32px] font-normal leading-relaxed text-white/90">
+                                                  {isTermFirst ? card.term : card.definition}
+                                              </p>
+                                          </div>
+                                      </div>
+
+                                      {/* Back Face */}
+                                      <div
+                                          className="absolute inset-0 w-full h-full bg-[#202230] rounded-2xl p-6 sm:p-10 flex flex-col text-white shadow-[0_10px_40px_rgba(0,0,0,0.5)] border-2 border-white/5"
+                                          style={{ backfaceVisibility: "hidden", transform: "rotateX(180deg)" }}
+                                      >
+                                          <div className="flex justify-between items-start w-full">
+                                              <button className="flex items-center gap-2 text-white/40 hover:text-white transition-colors text-xs font-bold">
+                                                  <Lightbulb size={16}/> Tampilkan Istilah
+                                              </button>
+                                          </div>
+                                          <div className="flex-1 flex items-center justify-center text-center px-4 mt-6">
+                                              <p className="text-xl sm:text-[28px] font-normal leading-relaxed text-white/90">
+                                                  {isTermFirst ? card.definition : card.term}
+                                              </p>
+                                          </div>
+                                      </div>
+                                 </motion.div>
+                             </motion.div>
+                         );
+                     })}
+                 </AnimatePresence>
+            </div>
+        </div>
+
+        {/* Bottom Navigation Control */}
+        <div className="flex items-center justify-center px-8 py-6 w-full mx-auto border-t border-white/5 bg-transparent">
+            {/* Pagination Controls */}
+            <div className="flex items-center gap-5">
+                 <button
+                     onClick={handlePrev}
+                     className="w-[50px] h-[50px] rounded-full bg-[#2A2B40] hover:bg-[#3B3C54] flex items-center justify-center text-white transition-colors shadow-lg"
+                  >
+                     <ChevronLeft size={26} strokeWidth={2.5}/>
+                 </button>
+                 <button
+                     onClick={handleNext}
+                     className="w-[50px] h-[50px] rounded-full bg-[#2A2B40] hover:bg-[#3B3C54] flex items-center justify-center text-white transition-colors shadow-lg"
+                  >
+                     <ChevronRight size={26} strokeWidth={2.5}/>
+                 </button>
+            </div>
+        </div>
+      </div>
     </div>
   );
 }
