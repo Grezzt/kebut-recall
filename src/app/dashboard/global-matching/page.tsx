@@ -29,7 +29,8 @@ export default async function GlobalMatchingPage() {
   const { data, error } = await supabase
     .from("study_documents")
     .select("title, flashcards")
-    .eq("user_id", user.id);
+    .eq("user_id", user.id)
+    .neq("status", "deleted");
 
   if (error) {
     console.error("Failed to load documents:", error);

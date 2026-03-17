@@ -21,6 +21,7 @@ export default async function DashboardPage() {
     .from("study_documents")
     .select("id, title, status, flashcards, quiz, mindmap, created_at, file_url")
     .eq("user_id", user.id)
+    .neq("status", "deleted")
     .order("created_at", { ascending: false });
 
   if (error) {
