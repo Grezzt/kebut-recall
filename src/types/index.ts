@@ -18,6 +18,7 @@ export interface MindmapNode {
   id: string;
   label: string;
   parent_id: string; // Kosong ("") jika root
+  page_number?: number;
 }
 
 export interface StudyDocumentData {

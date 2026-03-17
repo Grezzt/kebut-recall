@@ -5,6 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import Quiz from "@/components/Quiz";
+import LoadingScreen from "@/components/LoadingScreen";
 import type { StudyDocument } from "@/types";
 
 interface Props {
@@ -43,12 +44,24 @@ export default function QuizStudyPage({ params }: Props) {
     loadDoc();
   }, [id]);
 
+  const handleUpdate = async (newQuiz: any[]) => {
+    try {
+      const supabase = createClient();
+      const { error } = await supabase
+        .from("study_documents")
+        .update({ quiz: newQuiz })
+        .eq("id", id);
+
+      if (error) throw error;
+      setDoc((prev) => prev ? { ...prev, quiz: newQuiz } : null);
+    } catch (err) {
+      console.error("Failed to update quiz:", err);
+      alert("Gagal menyimpan perubahan. Silakan coba lagi.");
+    }
+  };
+
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-pulse text-gray-400 text-sm">Memuat materi...</div>
-      </div>
-    );
+    return <LoadingScreen message="Memuat materi..." />;
   }
 
   if (!doc) notFound();
@@ -74,7 +87,7 @@ export default function QuizStudyPage({ params }: Props) {
         {/* Content */}
         <div className="pb-20">
           {doc.quiz && doc.quiz.length > 0 ? (
-            <Quiz questions={doc.quiz} />
+            <Quiz questions={doc.quiz} onUpdate={handleUpdate} />
           ) : (
             <div className="flex flex-col items-center justify-center rounded-2xl border-[3px] border-dashed border-white/30 bg-dark-90 py-20 px-6 text-center shadow-[8px_8px_0px_#ffffff]">
               <span className="text-6xl mb-6">🤖</span>

@@ -5,6 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import type { StudyDocument } from "@/types";
+import LoadingScreen from "@/components/LoadingScreen";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -43,11 +44,7 @@ export default function StudyOverviewPage({ params }: Props) {
   }, [id]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-pulse text-gray-400 text-sm">Memuat materi...</div>
-      </div>
-    );
+    return <LoadingScreen message="Menyiapkan meja belajarmu..." />;
   }
 
   if (!doc) notFound();

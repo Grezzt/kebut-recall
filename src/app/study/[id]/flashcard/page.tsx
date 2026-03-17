@@ -5,6 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import Flashcard from "@/components/Flashcard";
+import LoadingScreen from "@/components/LoadingScreen";
 import type { StudyDocument } from "@/types";
 
 interface Props {
@@ -43,12 +44,24 @@ export default function FlashcardStudyPage({ params }: Props) {
     loadDoc();
   }, [id]);
 
+  const handleUpdate = async (newFlashcards: any[]) => {
+    try {
+      const supabase = createClient();
+      const { error } = await supabase
+        .from("study_documents")
+        .update({ flashcards: newFlashcards })
+        .eq("id", id);
+
+      if (error) throw error;
+      setDoc((prev) => prev ? { ...prev, flashcards: newFlashcards } : null);
+    } catch (err) {
+      console.error("Failed to update flashcards:", err);
+      alert("Gagal menyimpan perubahan. Silakan coba lagi.");
+    }
+  };
+
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-pulse text-gray-400 text-sm">Memuat materi...</div>
-      </div>
-    );
+    return <LoadingScreen message="Memuat materi..." />;
   }
 
   if (!doc) notFound();
@@ -74,7 +87,11 @@ export default function FlashcardStudyPage({ params }: Props) {
         {/* Content */}
         <div className="pb-20">
           {doc.flashcards && doc.flashcards.length > 0 ? (
-            <Flashcard flashcards={doc.flashcards} />
+            <Flashcard
+              flashcards={doc.flashcards}
+              documentId={id}
+              onUpdate={handleUpdate}
+            />
           ) : (
             <div className="flex flex-col items-center justify-center rounded-2xl border-[3px] border-dashed border-white/30 bg-dark-90 py-20 px-6 text-center shadow-[8px_8px_0px_#ffffff]">
               <span className="text-6xl mb-6">🤖</span>

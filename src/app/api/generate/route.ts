@@ -23,6 +23,7 @@ const mindmapSchema = z.object({
   id: z.string().describe("ID unik node (misal: 'node_1')."),
   label: z.string().describe("Nama konsep utama atau sub-konsep."),
   parent_id: z.string().describe("ID dari node induknya. Gunakan 'root' jika ini adalah konsep paling utama."),
+  page_number: z.number().int().optional().describe("Nomor halaman PDF tempat konsep mindmap ini banyak dibahas atau diuraikan, (cari berdasarkan penampakan atau penanda topik ini, layaknya '--- PAGE X ---'). Ambil satu yang paling relevan."),
 });
 
 const documentSchema = z.object({
